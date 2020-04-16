@@ -1,0 +1,9 @@
+
+;; Defult opacity for MBB model: K_850 from James+02,
+;;  beta = 1.5 unless custom value specified
+sig_data = [.7, 850., -1.5] ; [K0 in cm2/g, lbd0 in um, beta (w/ sign)]
+
+redfact_sil = 2.  ; Reduction factor for silicates
+redfact_c = 4.    ; Reduction factor for carbon
+
+d_0 = 100. ; Luminosity distance to adopt for z = 0 (in Mpc)
