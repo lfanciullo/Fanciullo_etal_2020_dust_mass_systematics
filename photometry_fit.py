@@ -292,9 +292,9 @@ def analyse_emcee(mcmcoutput_filename, nparam):
         #nparam - Given in main body. len(data) - length of the data array. 
         #Plotting Corner plots
         if (nparam == 2):
-            fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$", "$beta$"])
-        else:
             fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$"])
+        else:
+            fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$", "$beta$"])
         #Saving plots
         if (currentmode == 'raw'):
                 fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_out_long + '.png')
@@ -365,7 +365,6 @@ if __name__=="__main__":
             SEDfolder = 'synthetic_SEDs/Photometry/'
             outfolder = 'fit_result_files/'
             mcmcplotfolder = 'plots/MCMC/'
-
 
         ##########################
 

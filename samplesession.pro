@@ -30,11 +30,11 @@ filters = ['PACS70', 'PACS100', 'PACS160', 'SPIRE250', 'SPIRE350', 'SPIRE500', '
 
 ;; Dust model characteristics (comment/uncomment/modify as needed):
 comp = $
-   ['E30R', 'BE']
-   ;['MBBtest']
+   ;['E30R', 'BE']
+   ['MBBtest']
 compfrac = $
-   [.7, .3]
-   ;[1.]
+   ;[.7, .3]
+   [1.]
 T_array = $
    ;[[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
    [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
