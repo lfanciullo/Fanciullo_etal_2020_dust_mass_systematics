@@ -3,18 +3,15 @@ PRO makesed, wl_sed, $
              sed_out, $
              T_in, $
              fT_in, $
-             Ttype, $
              comp, $
              f_comp, $
              photometry = photometry, $
              beta = beta, $
-             T_0 = T_0, $       ; new
-                                ;dosum = dosum, $ ;;;
+             T_0 = T_0, $
              fold_data = fold_data, $
              red = red, $
              errbars = errbars, $
              z_in = z_in, $
-                                ;dist = dist, $ ;;;
              M_d = M_d, $
              filters_in = filters_in, $
              plot = plot, $
@@ -76,48 +73,31 @@ for i = 0, nsed-1 do begin
 
    ;; Multiplicative factor, assuming MAC opacity and point source
    ;; (Emission *4 pi to get total emission (assume isotropy), /4 pi d^2 to get flux)
-   if z NE 0 then dist = lumdist(z, /silent) else dist = d_0 ; Distance in Mpc
-   dist_cgs = dist * 3.0857d24                               ; Conversion to cm
+   if z NE 0 then dist = lumdist(z, /silent) else dist = d_0  ; Distance in Mpc
+   dist_cgs = dist * 3.0857d24                                ; Conversion to cm
    em_factor = M_d_cgs * (1+z) / dist_cgs^2
    
    ;; Material opacity
-   ;ref_used = strupcase(ref_used)
    if (comp NE ['MBBtest']) then begin
       ;; Opacity folder path
       if not keyword_set(fold_data) then begin
          fold_data = 'MAC_files_reprocessed/'
          if not keyword_set(silent) then print, 'MAKESED: FIR opacity directory not defined. Defaulting to ', fold_data
       endif
-      ;whatdate = '19-03-04/'
-      ;if keyword_set(verbose) then print, 'MAKESED: Keyword WHATDATE not defined. Defaulting to ', whatdate
-      ;if not keyword_set(fold_data) then begin
-      ;   ;; TO DO: READ THIS FROM SET VARIABLES
-      ;   fold_data = '~/Documents/Postdoc/Science/FIR_data/Database_FIR/'
-      ;   print, 'MAKESED: FIR opacity directory not defined. Defaulting to ', fold_data
-      ;endif
-      ;fold_data_real = fold_data + whatdate
 
       ;; Comp keywords
-      ;if not keyword_set(comp) then print, 'MAKESED: COMP is undefined.'
-      ;if not keyword_set(f_comp) then print, 'MAKESED: F_COMP is undefined.'
       op_all[*, i, *, *] = make_opac(fold_data, comp, T, wl_eff, plot = plot, saveplot = saveplot)
       nmat = n_elements(comp)
-      ;op_type = 'MAC'
       if keyword_set(beta) and not keyword_set(silent) then print, $
-         'MAKESED: Specified keyword BETA is redundantnot needed when using experimental MAC measurements'
+         'MAKESED: Specified keyword BETA is not needed when using experimental MAC measurements'
    endif else begin
       f_comp = dblarr(nmat)+1.
-      ;; Assuming K_850 from James+02, beta = 1.5 (unless otherwise specified)
-      ;sig_data = [.77, 850., -1.5] ; [K0 in cm2/g, lbd0 in um, beta (w/ sign)]
       if keyword_set(beta) then sig_data[2] = -beta else begin
          if not keyword_set(silent) then print, 'MAKESED: No value specified for BETA. Defaulting to BETA = ', $
                                                 string(-sig_data[2], format = '(F0.2)')
       endelse
       op_all_1T = sig_data[0] * (wl_eff/sig_data[1])^(sig_data[2])
-      ;; op_all = reform(op_all, nwl_sed, nsed, nfT, nmat) ; Adding dummy dimension for computational simplicity
       for j = 0, nfT-1 do op_all[*, i, j] = op_all_1T
-      ;nmat = 1   ; Shallow index
-      ;op_type = 'MAC'
    endelse
 
    ;; Reduced dust opacity case
@@ -168,17 +148,5 @@ endif else begin
    sed_out = sed
 endelse
 
-
-;; if keyword_set(dosum) then begin
-;;    sed_split = reform(sed_split, nsed, nwl_sed, nT, nmat) ; Don't allow IDL to erase (eventual) shallow dimensions
-;;    sed =  total(sed_split, 2)                     ; Sum on T
-;;    sed = reform(sed, nwl_sed, nmat)             ; Don't allow IDL to erase (eventual) shallow dimensions
-;;    sed =  total(sed, 2)                         ; Sum on materials
-;; endif else begin
-;;    sed = sed_split
-;;    sed = reform(sed_split, nwl_sed, nT, nmat)     ; Don't allow IDL to erase (eventual) shallow dimensions
-;; endelse
-
-;stop
 
 END

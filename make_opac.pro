@@ -20,19 +20,16 @@ for j = 0, nmat-1 do begin
       readcol, filepath_all[i], wl_temp, mac_temp, skipline = 4, /silent
       if (i EQ 0) then begin
          nwl_fromfile = n_elements(wl_temp)  ; NOTA: This assumes that all wavelength arrays have the same size (which should be the case if opacity_reprocess worked well) or that the first array is the shortest (!!!)
-         ;nwl_fromfile = intarr(nT_fromfile) & nwl_fromfile[0] = n_elements(wl_temp)
-         wl_fromfile = dblarr(nwl_fromfile, nT_fromfile) ;This would be good practice but I know it's not needed with my data
+         wl_fromfile = dblarr(nwl_fromfile, nT_fromfile) 
          mac_fromfile = dblarr(nwl_fromfile, nT_fromfile)
       endif
-      wl_fromfile[*,i] = wl_temp ;See above
-      ;nwl_fromfile[i] = n_elements(wl_temp)
+      wl_fromfile[*,i] = wl_temp
       mac_fromfile[*,i] = mac_temp
       junk = strsplit(filepath_all[i], '_/K.', /extract)
       T_fromfile[i] = junk[n_elements(junk)-3] ;(junk[11])
    endfor
 
-   ;wl_fromfile = wl_temp         ;See above
-   realTorder = sort(T_fromfile) ;Need to reorder the arrays
+   realTorder = sort(T_fromfile) ; Need to reorder the arrays
    T_fromfile = T_fromfile(realTorder)
    mac_fromfile = mac_fromfile[*, realTorder]
    wl_fromfile = wl_fromfile[*, realTorder]
@@ -102,9 +99,6 @@ for j = 0, nmat-1 do begin
                , col = 0, linestyle = lstylesubs[i], thick = 1.5*!p.thick
       legend, Tstring[Tsubs], psym = -0, linestyle = lstylesubs, /right, /bottom, charsize = 1.4, thick = 1.5*!p.thick
       xyouts, sqrt(xlims[0]*xlims[1]), 3.75, material[j], alignment = .5, charsize = 2.5, charthick = 1.5*!p.charthick
-      ;; ;Replot axes partly hidden by the polyfill
-      ;;axis, yaxis = 0, /ystyle
-      ;;axis, yaxis = 1, /ystyle
       if keyword_set(saveplot) then begin
          device, /close
          set_plot, 'x'

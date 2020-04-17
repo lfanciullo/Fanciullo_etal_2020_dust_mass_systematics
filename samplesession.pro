@@ -36,13 +36,13 @@ compfrac = $
    [.7, .3]
    ;[1.]
 T_array = $
-   [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
-   ;[[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
+   ;[[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
+   [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
 T_frac_array = $
    ;[1.] & Tdist = 'singleT'  ; One single-temperature model
-   [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] & Tdist = 'singleT'  ; Multiple single-temperature models
+   ;[[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] & Tdist = 'singleT'  ; Multiple single-temperature models
    ;[.9, .1] & Tdist = 'customT'  ; One two-temperatures model
-   ;[[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] & Tdist = 'customT'
+   [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] & Tdist = 'customT'
 z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 
 ;; Launching the script
@@ -50,7 +50,7 @@ z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 .r physconst
 create_FIR_SED, fold_data = folddata, fold_sed = foldseds, fold_pics = foldpics, $
                 save_sed = savesed, plotsmoothing = plot_smooth, plot_SED = plotSED, save_plot = saveplot, $
-                comp = comp, comp_frac = compfrac, T_all = T_array, T_frac_all = T_frac_array, z_all = z_array, $
+                comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, $
                 filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed
 
 

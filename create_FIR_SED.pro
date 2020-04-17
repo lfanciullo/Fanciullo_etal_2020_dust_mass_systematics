@@ -1,6 +1,6 @@
 
 FUNCTION tcorrcmb, T_in, z, Tcmb0 = Tcmb, beta = beta
-;; Caluclates CMB-heated dust temperature according to...
+;; Calculates CMB-heated dust temperature according to...
   
 if not keyword_set(Tcmb) then Tcmb = 2.725
 if not keyword_set(beta) then begin
@@ -16,7 +16,7 @@ END
 
 PRO create_FIR_SED, fold_data = fold_data, fold_sed = fold_SEDs, fold_pics = fold_pics, $
                 save_sed = save_sed, plotsmoothing = plotsmoothing, plot_SED = plot_SED, save_plot = save_plot, $
-                comp = comp, comp_frac = comp_frac, T_all = T_all, T_frac_all = T_frac_all, z_all = z_all, filt = filt, $
+                comp = comp, fcomp = fcomp, T_all = T_all, fT_all = fT_all, z_all = z_all, filt = filt, $
                 T_cmb0 = T_cmb0, M_d = M_d, beta = beta, wl_sed = wl_sed, tcorr = tcorr, silent = silent
   
 ;; NEED TO COMPILE GRAMS_SYNTHPHOT BEFORE USING THIS
@@ -26,12 +26,6 @@ PRO create_FIR_SED, fold_data = fold_data, fold_sed = fold_SEDs, fold_pics = fol
 
   
 ;;; Initial settings ;;;
-
-;fold_data = '~/Documents/Postdoc/Science/FIR_data/Database_FIR/'        ; UPDATE AS NEEDED
-;synthvers = $
-   ;'v07'
-   ;'v08'      ; UPDATE AS NEEDED
-;fold_SEDs_a = '~/Documents/Postdoc/Science/FIR_data/SED_grid/synthSEDs_' + synthvers + '/'
 
 if not keyword_set(save_sed) then save_sed = 0
 if not keyword_set(plotsmoothing) then plotsmoothing = 0
@@ -63,25 +57,24 @@ if not keyword_set(comp) then begin
    comp = ['E30R', 'BE']
    if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword COMP not defined. Defaulting to ', comp
 endif
-if not keyword_set(comp_frac) then begin
-   comp_frac = [.7, .3]
-   if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword COMP_FRAC not defined. Defaulting to ', $
-                                           strtrim(string(comp_frac, format = '(F0.2)'), 1)
+if not keyword_set(fcomp) then begin
+   fcomp = [.7, .3]
+   if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword FCOMP not defined. Defaulting to ', $
+                                           strtrim(string(fcomp, format = '(F0.2)'), 1)
 endif else begin
-   if n_elements(comp_frac) NE n_elements(comp) then print, 'CREATE_FIR_SED: COMP and COMP_FRAC must have the same number of elements'
+   if n_elements(fcomp) NE n_elements(comp) then print, 'CREATE_FIR_SED: COMP and FCOMP must have the same number of elements'
 endelse
 if not keyword_set(T_all) then begin
    T_all = [30.]
    if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword T_ALL not defined. Defaulting to ', $
                                            strtrim(string(T_all, format = '(F0.1)'), 1), ' K'
 endif
-if not keyword_set(T_frac_all) then begin
-   T_frac_all = [1.]
-   Tdist = 'singleT'
+if not keyword_set(fT_all) then begin
+   fT_all = [1.]
    if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword T_FRAC_ALL not defined. Defaulting to ', $
-                                           strtrim(string(T_frac_all, format = '(F0.3)'), 1)
+                                           strtrim(string(fT_all, format = '(F0.3)'), 1)
 endif else begin
-   if n_elements(comp_frac) NE n_elements(comp) then print, 'CREATE_FIR_SED: T_ALL and T_FRAC_ALL must have the same number of elements'
+   if n_elements(fcomp) NE n_elements(comp) then print, 'CREATE_FIR_SED: T_ALL and T_FRAC_ALL must have the same number of elements'
 endelse
 if not keyword_set(z_all) then begin 
    z_all = [1.]
@@ -95,7 +88,6 @@ if comp EQ ['MBBtest'] and not keyword_set(beta) then begin
 endif
 if not keyword_set(wl_sed) then begin
    nwl_sed = 450
-   ;wl_fineness = 150.                      ; Points per order of magnitude in wl
    wl_sed = 10.^(findgen(nwl_sed)/150 + 1.) ; 10 um - 1 cm, 150 points per order of magnitude
    if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword WL_SED not defined. Using default value'
 endif else begin
@@ -112,17 +104,15 @@ if not keyword_set(filt) then begin
       ]
    if not keyword_set(verbose) then print, 'CREATE_FIR_SED: Keyword FILT not defined. Using default value'
 endif
-;smootype = $
-;   'boxcar' & smsuff = '_Bsmoothed' ; Only option for now, we'll see whether to add more
 
 nmat = n_elements(comp)
 carbon = where(comp EQ 'AC' OR comp EQ 'BE')
 sil = where(comp NE 'AC' AND comp NE 'BE')
 if (size(T_all))[0] EQ 1 then T_all = reform(T_all, (size(T_all))[1], 1) ;Script needs 2D arrays
-if (size(T_frac_all))[0] EQ 1 then T_frac_all = reform(T_frac_all, (size(T_frac_all))[1], 1)
+if (size(fT_all))[0] EQ 1 then fT_all = reform(fT_all, (size(fT_all))[1], 1)
 nT_all = (size(T_all))[2]       ; Number of different T distributions in current run
 nT_dist = (size(T_all))[1]      ; Number of individual Ts for each distribution
-if Tdist EQ 'singleT' then wlmin = 100. else wlmin = 50.
+if (size(T_all))[1] EQ 1 then wlmin = 100. else wlmin = 50.  ; min wl = 100 um for single-T dust, 50 um for multi-T
 nz = n_elements(z_all)
 nfilt = n_elements(filt)
 
@@ -160,17 +150,17 @@ Tfrac_list = fltarr(nT_dist, nsed)
 z_list = fltarr(nsed)
 for i = 0, nsed-1 do begin
    T_list[*, i] = T_all[*, [i/nz]]
-   Tfrac_list[*, i] = T_frac_all[*, [i/nz]]
+   Tfrac_list[*, i] = fT_all[*, [i/nz]]
    z_list[i] = z_all[[i MOD nz]]
 endfor
 
 ;; Create spectra
-makesed, wl_sed, sed, T_list, Tfrac_list, Tdist, comp, comp_frac, $
+makesed, wl_sed, sed, T_list, Tfrac_list, comp, fcomp, $;, Tdist
             z_in = z_list, M_d = M_d, filters_in = filt, $
             plot = plotsmoothing, saveplot = save_plot
 ;; Create a reduced-opacity version as well (unless comp = MBBtest)
 if comp NE ['MBBtest'] then begin
-   makesed, wl_sed, sed_reduc, T_list, Tfrac_list, Tdist, comp, comp_frac, $
+   makesed, wl_sed, sed_reduc, T_list, Tfrac_list, comp, fcomp, $;, Tdist
                z_in = z_list, M_d = M_d, filters_in = filt, /red, $
                plot = plotsmoothing, saveplot = save_plot
 endif
@@ -185,20 +175,20 @@ if save_sed then begin
             strtrim(string(beta, format = '(F0.2)'), 1)  ; Filename includes beta value if it's not the standard one
          compstring += '_'
       endif else begin
-         compstring = strjoin(comp + '-' + strtrim(string(100 * comp_frac, format = '(F4.1)'), 1), '+')
+         compstring = strjoin(comp + '-' + strtrim(string(100 * fcomp, format = '(F4.1)'), 1), '+')
          compstring_reduc = compstring + '-red_'
          compstring += '-raw_'
       endelse
       CASE nT_dist OF  ; Temperature distribution string
          1: Tstring = 'oneT-' + strtrim(string(T_all[i], format = '(F0.1)'),1) + 'K'
          2: Tstring = 'twoT-' + strjoin(strtrim(string(T_all[*, i], format = '(F0.1)'),1), 'K+') + 'K-fw' + $
-                      strtrim(string(T_frac_all[1, i], format = '(f0.'+strtrim(string(ceil(abs(alog10(T_frac_all[1, i])))),1) + ')'), 1)
+                      strtrim(string(fT_all[1, i], format = '(f0.'+strtrim(string(ceil(abs(alog10(fT_all[1, i])))),1) + ')'), 1)
          else: begin
-            nsigfig = ceil(abs(alog10(min(T_frac_all[*, i]))) -1)
-            if nsigfig LT 0 OR not finite(nsigfig) then print, 'ERROR (FIR_SCRIPT_COMPREHENSIVE): degenerate T_frac distribution (contains 1 or 0)'
+            nsigfig = ceil(abs(alog10(min(fT_all[*, i]))) -1)
+            if nsigfig LT 0 OR not finite(nsigfig) then print, 'ERROR (FIR_SCRIPT_COMPREHENSIVE): degenerate fT distribution (contains 1 or 0)'
             Tfracformat = '(E0.' + strtrim(nsigfig, 1) + ')'
             Tstring = 'multiT-' + strjoin(strtrim(string(T_all[*, i], format = '(F0.1)'),1), 'K+') + 'K-' + $
-                      strjoin(strtrim(string(T_frac_all[*, i], format = Tfracformat),1), '+')
+                      strjoin(strtrim(string(fT_all[*, i], format = Tfracformat),1), '+')
          end
       ENDCASE
       if keyword_set(tcorr) then Tstring += '-CMBcorr'
@@ -217,7 +207,7 @@ if save_sed then begin
 endif
 
 ;; Create photometry
-makesed, wl_sed, photstruct, T_list, Tfrac_list, Tdist, comp, comp_frac, /photometry, $
+makesed, wl_sed, photstruct, T_list, Tfrac_list, comp, fcomp, /photometry, $;, Tdist
             /errbars, z_in = z_list, M_d = M_d, filters_in = filt, $
             plot = plotsmoothing, saveplot = save_plot
 wl_phot = photstruct.filt_wl
@@ -225,7 +215,7 @@ fl_phot = photstruct.flux
 dfl_phot = photstruct.dflux
 ;; Create a reduced-opacity version as well (unless comp = MBBtest)
 if comp NE ['MBBtest'] then begin 
-   makesed, wl_sed, photstruct_reduc, T_list, Tfrac_list, Tdist, comp, comp_frac, /photometry, $
+   makesed, wl_sed, photstruct_reduc, T_list, Tfrac_list, comp, fcomp, /photometry, $;, Tdist
                /errbars, z_in = z_list, M_d = M_d, filters_in = filt, /red, $
                plot = plotsmoothing, saveplot = save_plot
    fl_phot_reduc = photstruct_reduc.flux
@@ -241,20 +231,20 @@ if save_sed then begin
          if (beta GT 0. AND beta NE 1.5) then compstring += '_beta' + strtrim(string(beta, format = '(F0.2)'), 1)
          compstring += '_'
       endif else begin
-         compstring = strjoin(comp + '-' + strtrim(string(100 * comp_frac, format = '(F4.1)'), 1), '+')
+         compstring = strjoin(comp + '-' + strtrim(string(100 * fcomp, format = '(F4.1)'), 1), '+')
          compstring_reduc = compstring + '-red_'
          compstring += '-raw_'
       endelse
       CASE nT_dist OF           ; Temperature distribution string
          1: Tstring = 'oneT-' + strtrim(string(T_list[i], format = '(F0.1)'),1) + 'K'
          2: Tstring = 'twoT-' + strjoin(strtrim(string(T_list[*, i], format = '(F0.1)'),1), 'K+') + 'K-fw' + $
-                      strtrim(string(T_frac_all[1, i/nz], format = '(f0.'+strtrim(string(ceil(abs(alog10(T_frac_all[1, i/nz])))),1) + ')'), 1)
+                      strtrim(string(fT_all[1, i/nz], format = '(f0.'+strtrim(string(ceil(abs(alog10(fT_all[1, i/nz])))),1) + ')'), 1)
          else: begin
-            nsigfig = ceil(abs(alog10(min(T_frac_all[*, i/nz]))) -1)
-            if nsigfig LT 0 OR not finite(nsigfig) then print, 'ERROR (FIR_SCRIPT_COMPREHENSIVE): degenerate T_frac distribution (contains 1 or 0)'
+            nsigfig = ceil(abs(alog10(min(fT_all[*, i/nz]))) -1)
+            if nsigfig LT 0 OR not finite(nsigfig) then print, 'ERROR (FIR_SCRIPT_COMPREHENSIVE): degenerate fT distribution (contains 1 or 0)'
             Tfracformat = '(E0.' + strtrim(nsigfig, 1) + ')'
             Tstring = 'multiT-' + strjoin(strtrim(string(T_all[*, i], format = '(F0.1)'),1), 'K+') + 'K-' + $
-                      strjoin(strtrim(string(T_frac_all[*, i/nz], format = Tfracformat),1), '+')
+                      strjoin(strtrim(string(fT_all[*, i/nz], format = Tfracformat),1), '+')
          end
       ENDCASE
       if keyword_set(tcorr) then Tstring += '-CMBcorr'
@@ -355,7 +345,5 @@ if save_sed then begin
 
 endif
 
-
-;stop
 
 END
