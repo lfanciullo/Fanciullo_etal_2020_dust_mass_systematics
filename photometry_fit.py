@@ -387,7 +387,7 @@ if __name__=="__main__":
              fixstring = fixstring + '_T40K-betaM31-prior'   
 
         if (sedtype == '1T'):
-            allSED = [fn for fn in glob.glob(SEDfolder + '*Phot*' + comp + '*oneT-20.0K*.dat', recursive = False) if not (((os.path.basename(fn).__contains__('CMBcorr')) or (os.path.basename(fn).__contains__('beta'))))]
+            allSED = [fn for fn in glob.glob(SEDfolder + '*Phot*' + comp + '*oneT*.dat', recursive = False) if not (((os.path.basename(fn).__contains__('CMBcorr')) or (os.path.basename(fn).__contains__('beta'))))]
             if comp == 'MBBtest':
                     fname_out_raw = 'Fit_' + comp + '_oneT' + fixstring
             else:
