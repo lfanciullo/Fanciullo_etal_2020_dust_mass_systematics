@@ -238,24 +238,35 @@ def run_emcee(flux_data, flux_unc_data, nwl, mcmcoutput_filename, nparam, nwalke
         sampler.run_mcmc(pos, steps) #steps given in main body.
         print("Done.")
         #Plotting Walker plots
-        #(Need to remake this for differen nparam #s)
-        if (nparam >= 2):
+        if (nparam == 3):
             fig, axes = plt.subplots(3, 1, sharex=True, figsize=(8, 9))
             axes[0].plot(sampler.chain[:, :, 0].T, color="k", alpha=0.4)
-            axes[0].set_ylabel("$log(mass)$")
+            axes[0].set_ylabel("$temperature$")
             axes[1].plot(sampler.chain[:, :, 1].T, color="k", alpha=0.4)
-            axes[1].set_ylabel("$temp$")
-            if (nparam >= 3):
-                axes[2].plot((sampler.chain[:, :, 2]).T, color="k", alpha=0.4)
-                axes[2].set_ylabel("$beta$")
-                axes[2].set_xlabel("step number")
+            axes[1].set_ylabel("$log(mass)$")
+            axes[2].plot((sampler.chain[:, :, 2]).T, color="k", alpha=0.4)
+            axes[2].set_ylabel("$beta$")
+            axes[2].set_xlabel("step number")
             if (currentmode == 'raw'):
                 plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long + '.png')
             elif (currentmode == 'red'):
                 plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long_red + '.png')
             else:
                 pass
-            plt.close()        
+        else:
+            fig, axes = plt.subplots(2, 1, sharex=True, figsize=(8, 9))
+            axes[0].plot(sampler.chain[:, :, 0].T, color="k", alpha=0.4)
+            axes[0].set_ylabel("$temperature$")
+            axes[1].plot(sampler.chain[:, :, 1].T, color="k", alpha=0.4)
+            axes[1].set_ylabel("$log(mass)$")
+            axes[1].set_xlabel("step number")
+            if (currentmode == 'raw'):
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long + '.png')
+            elif (currentmode == 'red'):
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long_red + '.png')
+            else:
+                pass
+        plt.close()        
         #Saving the data for Plotting corner plots and analysis
         samples = sampler.chain[:, burn_in:, :].reshape((-1, nparam)) #sampler.chain[no.of.chains, burn-in-step, no.of.variables].
         #burnin - given in main body - point/step from which we are to consider the data. The point where the walkers all converge as seen in the walker plots.
@@ -264,12 +275,12 @@ def run_emcee(flux_data, flux_unc_data, nwl, mcmcoutput_filename, nparam, nwalke
         f.close()
         f = open(mcmcoutput_filename, "a") #append(a) the created data file 
         for i in range(samples.shape[0]):
-                if (nparam == 2):
-                    outstring = "\t" + str(samples[i,0]) + "\t" + str(samples[i,1]) + "\t" + "\n" 
-                else:
-                    outstring = "\t" + str(samples[i,0]) + "\t" + str(samples[i,1]) + "\t" + str(samples[i,2]) + "\t" + "\n" 
-                f.write(outstring)
-                #"\t" = tab space. "\n" = start new line. str() = converting/casting a value into a string-Textual data in Python is handled with str objects. We're just printing the data as text format(although they are numbers) into the file.
+            if (nparam == 2):
+                outstring = "\t" + str(samples[i,0]) + "\t" + str(samples[i,1]) + "\t" + "\n" 
+            else:
+                outstring = "\t" + str(samples[i,0]) + "\t" + str(samples[i,1]) + "\t" + str(samples[i,2]) + "\t" + "\n" 
+            f.write(outstring)
+            #"\t" = tab space. "\n" = start new line. str() = converting/casting a value into a string-Textual data in Python is handled with str objects. We're just printing the data as text format(although they are numbers) into the file.
         f.close()
         #return - In this case since there is already an output generated we do not need a "return".
 
@@ -280,7 +291,11 @@ def analyse_emcee(mcmcoutput_filename, nparam):
         samples = data.reshape([len(data),nparam]) #Reshaping the saved array to a '3xlength' array (in this case it's the same shape as the orginal array) that can be read and used to plot corner plots.
         #nparam - Given in main body. len(data) - length of the data array. 
         #Plotting Corner plots
-        fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$", "$beta$"])
+        if (nparam == 2):
+            fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$", "$beta$"])
+        else:
+            fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$"])
+        #Saving plots
         if (currentmode == 'raw'):
                 fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_out_long + '.png')
         elif (currentmode == 'red'):
@@ -345,11 +360,11 @@ if __name__=="__main__":
         if plat == 'Windows':
             SEDfolder = r"synthetic_SEDs\Photometry\\"         # Synthetic potometry files
             outfolder = r"fit_result_files\\"                  # Fit results files
-            mcmcplotfolder = r"fit_result_files\MCMCplots\\"   # MCMC PDF plots
+            mcmcplotfolder = r"plots\MCMC\\"   # MCMC PDF plots
         else:
             SEDfolder = 'synthetic_SEDs/Photometry/'
             outfolder = 'fit_result_files/'
-            mcmcplotfolder = 'fit_result_files/MCMCplots/'
+            mcmcplotfolder = 'plots/MCMC/'
 
 
         ##########################
