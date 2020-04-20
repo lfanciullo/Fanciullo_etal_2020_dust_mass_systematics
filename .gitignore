@@ -1,0 +1,6 @@
+# Ignore temporary files
+*~
+
+# Ignore detailed MCMC output plots
+plots/MCMC/
+
