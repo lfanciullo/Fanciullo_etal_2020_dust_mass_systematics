@@ -33,8 +33,8 @@ global kappa_eff
 global wl_eff
 global z
 global filt_array
-global fname_out_long
-global fname_out_long_red
+global fname_outpic_raw
+global fname_outpic_red
 global currentmode
 global nparam
 global whatprior
@@ -248,9 +248,9 @@ def run_emcee(flux_data, flux_unc_data, nwl, mcmcoutput_filename, nparam, nwalke
             axes[2].set_ylabel("$beta$")
             axes[2].set_xlabel("step number")
             if (currentmode == 'raw'):
-                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long + '.png')
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_outpic_raw + '.png')
             elif (currentmode == 'red'):
-                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long_red + '.png')
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_outpic_red + '.png')
             else:
                 pass
         else:
@@ -261,9 +261,9 @@ def run_emcee(flux_data, flux_unc_data, nwl, mcmcoutput_filename, nparam, nwalke
             axes[1].set_ylabel("$log(mass)$")
             axes[1].set_xlabel("step number")
             if (currentmode == 'raw'):
-                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long + '.png')
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_outpic_raw + '.png')
             elif (currentmode == 'red'):
-                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_out_long_red + '.png')
+                plt.savefig(mcmcplotfolder + 'walkerplot_' + fname_outpic_red + '.png')
             else:
                 pass
         plt.close()        
@@ -297,9 +297,9 @@ def analyse_emcee(mcmcoutput_filename, nparam):
             fig = corner.corner(samples, labels=["$temperature$", "$log(mass)$", "$beta$"])
         #Saving plots
         if (currentmode == 'raw'):
-                fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_out_long + '.png')
+                fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_outpic_raw + '.png')
         elif (currentmode == 'red'):
-                fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_out_long_red + '.png')
+                fig.savefig(mcmcplotfolder + 'cornerplot_' + fname_outpic_red + '.png')
         else:
                 print('ERROR (PHOTOMETRY_FIT): Keyword "Currentmode" not recognized. Please choose "raw" or "red".')
         plt.close()
@@ -464,15 +464,19 @@ if __name__=="__main__":
                     Treal = float(Tstring[:-1])
                 comp = files_raw[i].split('_')[1]
                         
-                # Output filenames for pics #
+                # Output filenames for pics
                 if (sedtype == '1T'):
-                    fname_out_long = comp + '_oneT-' + Tstring + '_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_raw = comp + '_oneT-' + Tstring + '_z' + '{:0.2f}'.format(z) + fixstring
                 elif (sedtype == '1T+corr'):
-                    fname_out_long = comp + '_oneT-' + Tstring + '-CMBcorr_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_raw = comp + '_oneT-' + Tstring + '-CMBcorr_z' + '{:0.2f}'.format(z) + fixstring
                 elif (sedtype == '2T'):
-                    fname_out_long = comp + '_fw' + str(Treal) + '_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_raw = comp + '_fw' + str(Treal) + '_z' + '{:0.2f}'.format(z) + fixstring
                 else:
                     print('SED type %s not recognized. Please use 1T, 1T+corr or 2T.' % {sedtype})
+                if whatrun == 'long':
+                    fname_outpic_raw += '_longrun'
+
+                # Read photometric data
                 filt_all = loadtxt(SEDfolder + files_raw[i] + '.dat', dtype = 'str', delimiter = '|', usecols = (0), unpack=True)
                 for j in range(len(filt_all)):
                     filt_all[j] = filt_all[j].strip()
@@ -541,7 +545,6 @@ if __name__=="__main__":
                         temperature_output, mass_output, beta_output = analyse_emcee(mcmcoutput_filename, nparam)
                 elapsed = timeit.default_timer() - start_time # End timer
                 print ('end time:', elapsed)
-                
                 mass_rescaled = 10**(mass_output - np.log10((u.Msun).to(u.g)))
                 temperature = temperature_output[1]
                 dtemperatureplus = temperature_output[2] - temperature_output[1]
@@ -556,10 +559,11 @@ if __name__=="__main__":
                 #print('T_fit:', temperature, ' +', dtemperatureplus, ' -', dtemperatureminus)
                 #print('mass_fit:', mass, ' +', dmassplus, ' -', dmassminus)
                 #print('beta_fit:', beta, ' +', dbetaplus, ' -', dbetaminus)
-                        
+
+                # Write fit results in output file
                 if i == 0:
                         fname_out_raw = fname_out_raw + '.dat'
-                        f = open(fname_out_raw, "w")#open('test', "w")#
+                        f = open(outfolder + fname_out_raw, "w")#open('test', "w")#
                         bdhdr = 'nbands'.rjust(7)
                         if 'fw' in Tstring:
                                 Tstr = 'f_w'
@@ -580,7 +584,7 @@ if __name__=="__main__":
                                     'dbeta_fit-'.rjust(11) + "\n"
                         f.write(header)
                         f.close()
-                f = open(fname_out_raw, "a")#open('test', "a")#
+                f = open(outfolder + fname_out_raw, "a")#open('test', "a")#
                 bdstring = '%7i' %nwl
         
                 if 'fw' in Tstring:
@@ -620,12 +624,12 @@ if __name__=="__main__":
         print('Raw MAC fits completed for ' + comp)
         print()
 
-
+        
         if comp == 'MBBtest':   # No opacity correction needed for MBBtest
                 pdb.set_trace()
 
         
-        # Opacity-corrected results #
+        # Reduced opacity results #
         currentmode = 'red'
         for i in range(nsed):
                 z = float((files_red[i].split('_')[-1])[1:])
@@ -637,16 +641,18 @@ if __name__=="__main__":
                         Treal = float(Tstring[:-1])
                 comp = files_red[i].split('_')[1]
 
-                # Output filenames for pics #
+                # Output filenames for pics
                 if (sedtype == '1T'):
-                    fname_out_long_red = comp + '_oneT-' + Tstring + '_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_red = comp + '_oneT-' + Tstring + '_z' + '{:0.2f}'.format(z) + fixstring
                 elif (sedtype == '1T+corr'):
-                    fname_out_long_red = comp + '_oneT-' + Tstring + '-CMBcorr_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_red = comp + '_oneT-' + Tstring + '-CMBcorr_z' + '{:0.2f}'.format(z) + fixstring
                 elif (sedtype == '2T'):
-                    fname_out_long_red = comp + '_twoT-fw' + str(Treal) + '_z' + '{:0.2f}'.format(z) + fixstring
+                    fname_outpic_red = comp + '_twoT-fw' + str(Treal) + '_z' + '{:0.2f}'.format(z) + fixstring
                 else:
                     print('SED type %s not recognized. Please use 1T, 1T+corr or 2T.' % {sedtype})
-                    
+                if whatrun == 'long':
+                    fname_outpic_red += '_longrun'
+                
                 filt_all = loadtxt(SEDfolder + files_red[i] + '.dat', dtype = 'str', delimiter = '|', usecols = (0), unpack=True)
                 for j in range(len(filt_all)):
                     filt_all[j] = filt_all[j].strip()
@@ -706,7 +712,7 @@ if __name__=="__main__":
                 
                 if i == 0:
                         fname_out_red = fname_out_red + '.dat'
-                        f = open(fname_out_red, "w")#open('test', "a")#
+                        f = open(outfolder + fname_out_red, "w")#open('test', "a")#
                         bdhdr = 'nbands'.rjust(7)
 
                         if 'fw' in Tstring:
@@ -728,7 +734,7 @@ if __name__=="__main__":
                                     'dbeta_fit-'.rjust(11) + "\n"
                         f.write(header)
                         f.close()
-                f = open(fname_out_red, "a")#open('test', "a")#
+                f = open(outfolder + fname_out_red, "a")#open('test', "a")#
                 bdstring = '%7i' %nwl
 
                 if 'fw' in Tstring:

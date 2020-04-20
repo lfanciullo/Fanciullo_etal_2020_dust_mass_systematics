@@ -1,0 +1,13 @@
+# Ignore temporary files
+*~
+
+# Ignore tarballs etc.
+*.tar
+*.gz
+*.tgz
+
+# Ignore detailed MCMC output plots
+Python_fitting_code/MCMCplots/
+
+# Ignore obsolete files/data version
+*old*
