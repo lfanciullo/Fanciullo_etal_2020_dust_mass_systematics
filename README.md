@@ -32,26 +32,26 @@ This will populate the MAC_files_reprocessed/ subdirectory with the files needed
 2. Creating synthetic spectroscopy and photometry
 -------------------------------------------------
 
-...
+Coming soon
 
 
 
 3a. Fitting synthetic photometry in the general case (Python)
 -------------------------------------------------------------
 
-...
+Coming soon
 
 
 
 3b. Fitting high-redshift, two-band synthetic photometry (IDL)
 --------------------------------------------------------------
 
-...
+Coming soon
 
 
 
 4. Making the plots
 -------------------
 
-...
+Coming soon
 
