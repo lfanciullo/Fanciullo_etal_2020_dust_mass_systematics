@@ -5,7 +5,7 @@ The scripts perform four different functions: rewriting the original opacity dat
 
 
 
-0. Obtaining the original opacity files
+0 --- Obtaining the original opacity files
 ---------------------------------------
 
 The silicate opacity from Demyk et al. 2017a, b (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the MAC_files_original/ subfolder.
@@ -14,7 +14,7 @@ The carbon data from Mennella et al. 1998 (M98) can be requested to Vito Mennell
 
 
 
-1. Reading and rewriting the opacity files
+1 --- Reading and rewriting the opacity files
 ------------------------------------------
 
 Open IDL in the main directory and run the following:
@@ -29,28 +29,28 @@ This will populate the MAC_files_reprocessed/ subdirectory with the files needed
 
 
 
-2. Creating synthetic spectroscopy and photometry
+2 --- Creating synthetic spectroscopy and photometry
 -------------------------------------------------
 
 Coming soon
 
 
 
-3a. Fitting synthetic photometry in the general case (Python)
+3a --- Fitting synthetic photometry in the general case (Python)
 -------------------------------------------------------------
 
 Coming soon
 
 
 
-3b. Fitting high-redshift, two-band synthetic photometry (IDL)
+3b --- Fitting high-redshift, two-band synthetic photometry (IDL)
 --------------------------------------------------------------
 
 Coming soon
 
 
 
-4. Making the plots
+4 --- Making the plots
 -------------------
 
 Coming soon
