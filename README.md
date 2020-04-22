@@ -39,15 +39,38 @@ Coming soon
 3a --- Fitting synthetic photometry in the general case (Python)
 -------------------------------------------------------------
 
-Coming soon
+(Work in progress)
+
+Call the following from shell in the main repository:
+
+~~~Python
+    python photometry_fit.py
+~~~
+
+When doing the consistency test ('MBBtest'), the script will stop halfway (no need for reduced opacity) with the following message:
+
+~~~Python
+    > [Path of the folder containing the Git repository]/Fanciullo_etal_dust_mass_systematics/photometry_fit.py(633)<module>()
+    -> currentmode = 'red'
+~~~
+
+Just write 'exit' to close.
 
 
 
 3b --- Fitting high-redshift, two-band synthetic photometry (IDL)
 --------------------------------------------------------------
 
-Coming soon
+(Work in progress)
 
+Open IDL in the main repository and write the following:
+
+~~~IDL
+    .r grams_synthphot
+    .r physconst
+    fit2bands, /saveres
+    fit2bands, /red, /saveres
+~~~
 
 
 4 --- Making the plots

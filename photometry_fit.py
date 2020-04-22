@@ -348,8 +348,8 @@ if __name__=="__main__":
                               #                  'nonflat' = Gaussian prior in T with 40 K mean and 40 K sigma, beta prior from M31 (Smith et al. 2012)
 
         # Composition of SED to fit (comment/uncomment/add as needed):
-        #comp = 'MBBtest'
-        comp = 'E30R-70.0+BE-30.0'
+        comp = 'MBBtest'
+        #comp = 'E30R-70.0+BE-30.0'
 
         # Whether to use the fast or long run
         # 'fast': nwalkers = 30, steps = 1000, burn_in = 200; 'long': nwalkers = 100, steps = 10000, burn_in = 1000

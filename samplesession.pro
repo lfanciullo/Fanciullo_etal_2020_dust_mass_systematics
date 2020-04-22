@@ -9,6 +9,7 @@ opacity_reprocess, 'D17A', /savedata
 opacity_reprocess, 'D17B', /savedata
 
 
+
 ;;; CREATING SYNTHETIC SPECTROSCOPY/PHOTOMETRY ;;;
 
 ;; Settings
@@ -54,9 +55,14 @@ create_FIR_SED, fold_data = folddata, fold_sed = foldseds, fold_pics = foldpics,
                 filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed
 
 
-;;; PHOTOMETRY FIT ;;;
 
-;; Work in progress
+;;; 2-BAND PHOTOMETRY FIT ;;;
+;; Nota: all-band fit is done with Python
+
+beta_2bd = [1.5, 1.75, 2.]
+
+fit2bands, ...
+fit2bands, ..., /red
 
 
 ;;; PLOTS ;;;
