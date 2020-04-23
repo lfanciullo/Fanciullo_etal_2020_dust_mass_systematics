@@ -25,15 +25,37 @@ Open IDL in the main directory and run the following:
     opacity_reprocess, 'D17B', /savedata
 ~~~
 
-This will populate the MAC_files_reprocessed/ subdirectory with the files needed to create the synthetic SEDs.
+The output files are saved in the *MAC_files_reprocessed/* subdirectory with the filename *{material name}_{temperature}K_interpol.xcat*.
 
 
 
 2 --- Creating synthetic spectroscopy and photometry
 -------------------------------------------------
 
-Coming soon
+(Work in progress)
 
+The synthetic SEDs can be created in IDL from the main repository. Before calling the SED-making code [create_FIR_SED](create_FIR_SED.pro) you will need to specify:
+* The dust composition 
+* The dust temperature distribution
+* The redshift range
+
+**Dust composition:** Requires one string vector for the material names and one float vector for the materials' mass fraction. For instance:
+~~~IDL
+    comp = ['E30R', 'BE']
+    compfrac = [.7, .3]
+~~~
+defines dust made of 70% E30R silicates (from D17B) and 30% BE carbon (from M98), which is the standard dust composition used in the article.
+
+**Temperature distribution:** ...
+
+**Redshift:** ...
+
+~~~IDL
+    .r grams_synthphot
+    .r physconst
+    create_FIR_SED, comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, $
+                /savesed, /plotsmoothing 
+~~~
 
 
 3a --- Fitting synthetic photometry in the general case (Python)
@@ -68,9 +90,14 @@ Open IDL in the main repository and write the following:
 ~~~IDL
     .r grams_synthphot
     .r physconst
-    fit2bands, /saveres
-    fit2bands, /red, /saveres
+    comp = 'E30R-70.0+BE-30.0'
+    fit2bands, comp = comp, /saveres
+    fit2bands, comp = comp, /red, /saveres
 ~~~
+
+NOTA: For the standard dust composition in the article --- 'E30R-70.0+BE-30.0', i.e. 70% E30R silicates and 30% BE carbon --- it is not necessary to specify the 'comp' keyword, which is the code's default. One must specify 'comp' for any other composition they wish to fit, though.
+
+The output files are saved in the *fit_result_files/* folder, under the names *2bdfit_{composition}-{raw or red}_oneT_{bands used}.dat*.
 
 
 4 --- Making the plots
