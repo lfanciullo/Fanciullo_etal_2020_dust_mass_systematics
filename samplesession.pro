@@ -43,7 +43,7 @@ T_frac_array = $
    ;[1.] & Tdist = 'singleT'  ; One single-temperature model
    ;[[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] & Tdist = 'singleT'  ; Multiple single-temperature models
    ;[.9, .1] & Tdist = 'customT'  ; One two-temperatures model
-   [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] & Tdist = 'customT'
+   [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] ;& Tdist = 'customT'
 z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 
 ;; Launching the script

@@ -46,16 +46,34 @@ The synthetic SEDs can be created in IDL from the main repository. Before callin
 ~~~
 defines dust made of 70% E30R silicates (from D17B) and 30% BE carbon (from M98), which is the standard dust composition used in the article.
 
-**Temperature distribution:** ...
+**Temperature distribution:** Two float arrays, one for the temperatures and one for the (mass) fraction of dust at each temperature. One-dimensional arrays of length *N* are interpreted as a single temperature distribution with *N* different temperature values. It can be more convenient to use two-dimensional arrays of size $N_{T} \times N_{\dist}$, which define $N_{\dist}$ separate distributions of $N_{T}$ values each. For instance:
+~~~IDL
+    T_array = [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
+    T_frac_array = [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]]
+~~~
+for 10 single-temperature distribution, while:
+~~~IDL
+    T_array = [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
+    T_frac_array = [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]]
+~~~
+for 8 two-temperature distributions.
 
-**Redshift:** ...
+**Redshift:** Just a simple array
+~~~IDL
+    z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+~~~
 
+Other parameters have a default value, but the script also accepts user-defined values. You can see more in [samplesession.pro](samplesession.pro)
+
+Finally, call:
 ~~~IDL
     .r grams_synthphot
     .r physconst
     create_FIR_SED, comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, $
                 /savesed, /plotsmoothing 
 ~~~
+
+The output files are saved in the *synthetic_SEDs/* subdirectory, further subdivided into *synthetic_SEDs/Spectra/* and *synthetic_SEDs/Photometry/*.
 
 
 3a --- Fitting synthetic photometry in the general case (Python)
