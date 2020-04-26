@@ -17,7 +17,7 @@ The scripts perform four different functions: rewriting the original opacity dat
 **Band profile files:** The *band_profiles/* folder contains files for ALMA bands (in *.dat* format) and (GRAMS_synhtphot)[band_profiles/GRAMS_synhtphot.fits], which includes PACS, SPIRE and SCUBA2 files that can be used by IDL. However, GRAMS_synhtphot cannot be used by the Python script: it is necessary to download additional profiles from the Internet.
 
 *Herschel bands*: Open the [Herschel page of the SVO Filter Profile Service](http://svo2.cab.inta-csic.es/svo/theory/fps/index.php?mode=browse&gname=Herschel) and download the following files to the *band_profiles/* folder, with the following name changes:
-* Herschel_Pacs.blue.dat &rarr PACS_70mu.dat
+* Herschel_Pacs.blue.dat &rarr; PACS_70mu.dat
 
 ...
 
