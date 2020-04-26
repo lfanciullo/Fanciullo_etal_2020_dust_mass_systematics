@@ -16,17 +16,21 @@ The scripts perform four different functions: rewriting the original opacity dat
 
 **Band profile files:** The *band_profiles/* folder contains files for ALMA bands (in *.dat* format) and (GRAMS_synhtphot)[band_profiles/GRAMS_synhtphot.fits], which includes PACS, SPIRE and SCUBA2 files that can be used by IDL. However, GRAMS_synhtphot cannot be used by the Python script: it is necessary to download additional profiles from the Internet.
 
-*Herschel bands*: Open the [Herschel page of the SVO Filter Profile Service](http://svo2.cab.inta-csic.es/svo/theory/fps/index.php?mode=browse&gname=Herschel) and download the following files to the *band_profiles/* folder, with the following name changes:
-* Herschel_Pacs.blue.dat &rarr; PACS_70mu.dat
-
-...
+* *Herschel bands:* Open the [Herschel page of the SVO Filter Profile Service](http://svo2.cab.inta-csic.es/svo/theory/fps/index.php?mode=browse&gname=Herschel) and download the following files (in ASCII table format) to the *band_profiles/* folder:
+    * Herschel_Pacs.blue.dat (PACS 70 um)
+    * Herschel_Pacs.green.dat (PACS 100 um)
+    * Herschel_Pacs.red.dat (PACS 160 um)
+    * Herschel_SPIRE.PSW.dat (SPIRE 250 um)
+    * Herschel_SPIRE.PMW.dat (SPIRE 350 um)
+    * Herschel_SPIRE.PLW.dat (SPIRE 500 um)
+* *SCUBA2 bands:* ...
 
 
 
 1 --- Reading and rewriting the opacity files
 ------------------------------------------
 
-Open IDL in the main directory and run the following:
+This section corresponds to the Sect. 2.1 in the main article. Open IDL in the main directory and run the following:
 
 ~~~IDL
     opacity_reprocess, 'M98', /savedata
