@@ -155,13 +155,11 @@ for i = 0, nsed-1 do begin
 endfor
 
 ;; Create spectra
-makesed, wl_sed, sed, T_list, Tfrac_list, comp, fcomp, $;, Tdist
-            z_in = z_list, M_d = M_d, filters_in = filt, $
+makesed, wl_sed, sed, T_list, Tfrac_list, comp, fcomp, z_in = z_list, M_d = M_d, filters_in = filt, $
             plot = plotsmoothing, saveplot = save_plot
 ;; Create a reduced-opacity version as well (unless comp = MBBtest)
 if comp NE ['MBBtest'] then begin
-   makesed, wl_sed, sed_reduc, T_list, Tfrac_list, comp, fcomp, $;, Tdist
-               z_in = z_list, M_d = M_d, filters_in = filt, /red, $
+   makesed, wl_sed, sed_reduc, T_list, Tfrac_list, comp, fcomp, z_in = z_list, M_d = M_d, filters_in = filt, /red, $
                plot = plotsmoothing, saveplot = save_plot
 endif
 

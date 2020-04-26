@@ -5,12 +5,21 @@ The scripts perform four different functions: rewriting the original opacity dat
 
 
 
-0 --- Obtaining the original opacity files
+0 --- Prerequisites: code, original opacity files, band filters
 ---------------------------------------
 
-The silicate opacity from Demyk et al. 2017a, b (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the MAC_files_original/ subfolder.
+(Must have match2 in *~/idl-libs/* folder)
 
-The carbon data from Mennella et al. 1998 (M98) can be requested to Vito Mennella at the following address: vito.mennella@inaf.it and unpacked in the subdirectory MAC_files_original/M98/
+**SIlicate opacity files:** The silicate opacity from Demyk et al. 2017a, b (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the MAC_files_original/ subfolder.
+
+**Carbon opacity files:** The carbon data from Mennella et al. 1998 (M98) can be requested to Vito Mennella at the following address: vito.mennella@inaf.it and unpacked in the subdirectory MAC_files_original/M98/
+
+**Band profile files:** The *band_profiles/* folder contains files for ALMA bands (in *.dat* format) and (GRAMS_synhtphot)[band_profiles/GRAMS_synhtphot.fits], which includes PACS, SPIRE and SCUBA2 files that can be used by IDL. However, GRAMS_synhtphot cannot be used by the Python script: it is necessary to download additional profiles from the Internet.
+
+*Herschel bands*: Open the [Herschel page of the SVO Filter Profile Service](http://svo2.cab.inta-csic.es/svo/theory/fps/index.php?mode=browse&gname=Herschel) and download the following files to the *band_profiles/* folder, with the following name changes:
+* Herschel_Pacs.blue.dat &rarr PACS_70mu.dat
+
+...
 
 
 
