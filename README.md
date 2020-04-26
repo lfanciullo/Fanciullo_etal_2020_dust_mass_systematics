@@ -8,11 +8,14 @@ The scripts perform four different functions: rewriting the original opacity dat
 0 --- Prerequisites: code, original opacity files, band filters
 ---------------------------------------
 
-(Must have match2 in *~/idl-libs/* folder)
+**Code and scripts:** The scripts will assume that you have the following:
+* *match2.pro*, which needs to be in your machine's IDL path (*~/idl-libs/*) for *[GRAMS_synthphot](grams_synthphot.pro)* to work;
+* *medabsdev.pro* ...
+* *percentiles.pro* ...
 
-**SIlicate opacity files:** The silicate opacity from Demyk et al. 2017a, b (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the MAC_files_original/ subfolder.
+**Silicate opacity files:** The silicate opacity from [Demyk et al. 2017a](https://ui.adsabs.harvard.edu/abs/2017A%26A...600A.123D/abstract), [2017b](https://ui.adsabs.harvard.edu/abs/2017A%26A...606A..50D/abstract) (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the *MAC_files_original/* directory.
 
-**Carbon opacity files:** The carbon data from Mennella et al. 1998 (M98) can be requested to Vito Mennella at the following address: vito.mennella@inaf.it and unpacked in the subdirectory MAC_files_original/M98/
+**Carbon opacity files:** The carbon data from [Mennella et al. 1998](https://ui.adsabs.harvard.edu/abs/1998ApJ...496.1058M/abstract) (M98) can be requested to Vito Mennella at the following address: vito.mennella@inaf.it and unpacked in the *MAC_files_original/M98/* subdirectory.
 
 **Band profile files:** The *band_profiles/* folder contains files for ALMA bands (in *.dat* format) and (GRAMS_synhtphot)[band_profiles/GRAMS_synhtphot.fits], which includes PACS, SPIRE and SCUBA2 files that can be used by IDL. However, GRAMS_synhtphot cannot be used by the Python script: it is necessary to download additional profiles from the Internet.
 
@@ -23,7 +26,7 @@ The scripts perform four different functions: rewriting the original opacity dat
     * Herschel_SPIRE.PSW.dat (SPIRE 250 um)
     * Herschel_SPIRE.PMW.dat (SPIRE 350 um)
     * Herschel_SPIRE.PLW.dat (SPIRE 500 um)
-* *SCUBA2 bands:* ...
+* *SCUBA2 bands:* The ...
 
 
 
