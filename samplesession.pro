@@ -2,21 +2,13 @@
 PRO samplesession
 
 
-;;; REPROCESSING OPACITY ;;;
-
-opacity_reprocess, 'M98', /savedata
-opacity_reprocess, 'D17A', /savedata
-opacity_reprocess, 'D17B', /savedata
-
-
-
 ;;; CREATING SYNTHETIC SPECTROSCOPY/PHOTOMETRY ;;;
 
 ;; Settings
-savesed = 1        ; Save the synthetic spectra + photometry?
-plot_smooth = 0   ; Plot the effect of opacity smoothing?
-plotSED = 0         ; Plot the SED (spectrum + photometry)?
-saveplot = 0       ; Save the plots?
+savesed = 1      ; Save the synthetic spectra + photometry?
+plot_smooth = 0  ; Plot the effect of opacity smoothing?
+plotSED = 0      ; Plot the SED (spectrum + photometry)?
+saveplot = 0     ; Save the plots?
 
 ;; Parameters
 folddata = 'MAC_files_reprocessed/'  ; Folder containing the (reprocessed) opacity
@@ -40,10 +32,8 @@ T_array = $
    ;[[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
    [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
 T_frac_array = $
-   ;[1.] & Tdist = 'singleT'  ; One single-temperature model
    ;[[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] & Tdist = 'singleT'  ; Multiple single-temperature models
-   ;[.9, .1] & Tdist = 'customT'  ; One two-temperatures model
-   [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] ;& Tdist = 'customT'
+   [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] 
 z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 
 ;; Launching the script
@@ -52,22 +42,41 @@ z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 create_FIR_SED, fold_data = folddata, fold_sed = foldseds, fold_pics = foldpics, $
                 save_sed = savesed, plotsmoothing = plot_smooth, plot_SED = plotSED, save_plot = saveplot, $
                 comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, $
-                filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed
+                filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed, /silent
 
 
 
-;;; 2-BAND PHOTOMETRY FIT ;;;
-;; Nota: all-band fit is done with Python
+;;; PLOTTING FIG. 2 ;;;
 
-beta_2bd = [1.5, 1.75, 2.]
+;; Settings
+savesed = 0
+plot_smooth = 1
+plotSED = 0
+saveplot = 1
 
-fit2bands, ...
-fit2bands, ..., /red
+;; Parameters
+folddata = 'MAC_files_reprocessed/'
+foldSEDs = 'synthetic_SEDs/'
+foldpics = 'plots/'
+z_array = [0.]
 
+;; Choice of material (to comment/uncomment/modify as needed):
+;; Example: E30R silicates
+;comp = ['E30R']
+;compfrac = [1.]
+;T_array = [10., 100., 300.]
+;T_frac_array = [1., 0., 0.]  ; Content is not important as long as it has the same # of elements as T_array
+;; Example: BE carbon
+comp = ['BE']
+compfrac = [1.]
+T_array = [24., 100., 295.]
+T_frac_array = [1., 0., 0.]  ; Content is not important as long as it has the same # of elements as T_array
 
-;;; PLOTS ;;;
-
-;; Work in progress
+;; Launching the script
+.r grams_synthphot
+.r physconst
+create_FIR_SED, save_sed = savesed, plotsmoothing = plot_smooth, plot_SED = plotSED, save_plot = saveplot, $
+                comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, /silent
 
 
 

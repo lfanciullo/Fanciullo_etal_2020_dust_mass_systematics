@@ -41,7 +41,7 @@ for i = 0, nfiltout-1 do begin
    nif = n_elements(IF_central)
    for k = 0, nif-1 do filtshape[where(abs(nu_temp - nu_IF_temp[k]) LT bandwidth/2)] = 1.
    if keyword_set(writefilt) then begin
-      folder_temp = '/Users/lapofanciullo/Documents/Postdoc/Science/Python_stuff/'
+      folder_temp = 'band_profiles/'
       fname_temp = alma_bands_all[i] + '.dat'
       wl_temp = 1e1*speedoflight()/nu_temp ;In Angstrom
       writecol, folder_temp+fname_temp, wl_temp, filtshape

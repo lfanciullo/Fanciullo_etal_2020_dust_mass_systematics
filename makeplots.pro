@@ -46,6 +46,7 @@ PRO plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red, saveplot =
      T2use = [20., 25., 30., 35., 40., 45., 50., 60., 80., 100.]
      xlims = [10., 110.]
      x_log = 0
+     ymultfact = .85
      xtit = textoidl('T_{real} (K)')
   endif else begin
      ;;if Tdist = '2T' OR Tdist = 'twoT' then Tdstring = '_twoT_'
@@ -53,6 +54,7 @@ PRO plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red, saveplot =
      T2use = [1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1]
      xlims = [3e-5, 1.]
      x_log = 1
+     ymultfact = .75
      xtit = textoidl('f_{W}')
   endelse
   
@@ -90,14 +92,15 @@ PRO plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red, saveplot =
         dy1_lo = dTfit_lo
         dy1_hi = dTfit_hi
         if (Tdist EQ '1T' OR Tdist EQ 'oneT') then begin
-           ylims = [0., 190.]
+           ylims = [10., 190.]
+           xextra = ylims
            yextra = ylims
         endif else begin
-           ylims = [0., 149.]
+           ylims = [10., 110.]
+           xextra = xlims
            yextra = [30., 30.]
            yextra2 = [100., 100.]
         endelse
-        xextra = ylims
         ytit = textoidl('T_{fit} (K)')
      end
      else: print, 'ERROR (MAKEPLOTS -> PLOTFITRES): ', par2plot, ' is not among the accepted values of PAR2PLOT'
@@ -123,10 +126,9 @@ PRO plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red, saveplot =
      sel = seltemp1[seltemp2]
      
      if (i EQ n_elements(z2use)-1) then $
-        plot, xextra, yextra, col = 0, yrange = ylims, xlog = x_log, xrange = xlims, /xstyle, /ystyle, xtickname = xtempname, /nodata $
-     else plot, xextra, yextra, col = 0, yrange = ylims, xlog = x_log, xrange = xlims, /xstyle, /ystyle, /nodata
-;stop
-     oplot, xlims, yextra, col = 0, linestyle = 2
+        plot, xextra, yextra, col = 0, yrange = ylims, xlog = x_log, xrange = xlims, /xstyle, /ystyle, xtickname = xtempname, /nodata else $
+           plot, xextra, yextra, col = 0, yrange = ylims, xlog = x_log, xrange = xlims, /xstyle, /ystyle, /nodata
+     oplot, xextra, yextra, col = 0, linestyle = 2
      if keyword_set(yextra2) then oplot, xlims, yextra2, col = 0, linestyle = 2
      ;oploterror, x[sel], y1[sel], dy1_hi[sel], ps = -8, col = 0, errcol = 0, /hibar
      ;oploterror, x[sel], y1[sel], dy1_lo[sel], ps = -8, col = 0, errcol = 0, /lobar
@@ -135,25 +137,23 @@ PRO plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red, saveplot =
 
      ;; Printing z value with XYOUTS
      if x_log then xout = sqrt(max(xlims) * min(xlims)) else xout = (max(xlims) + min(xlims))/2
-     ;youtfact = .8
-     ;youtfact = .85
-     xyouts, xout, max(ylims * .8), 'z = ' + strtrim(string(z2use[i], format = '(F0.2)'), 1), charsize = 1.3, alignment = 0.5
+     xyouts, xout, max(ylims * ymultfact), 'z = ' + strtrim(string(z2use[i], format = '(F0.2)'), 1), charsize = 1.3, alignment = 0.5
      multiplot
      
   endfor
 
   ;; Final box
-  plot, xextra, yextra, col = 0, linestyle = 2, xrange = xlims, yrange = ylims, xlog = x_log, /xstyle, /ystyle, xtickname = xtempname
-  oplot, xlims, yextra, col = 0, linestyle = 2
+  plot, xextra, yextra, col = 0, xrange = xlims, yrange = ylims, xlog = x_log, /xstyle, /ystyle, xtickname = xtempname, /nodata
+  oplot, xextra, yextra, col = 0, linestyle = 2
   if keyword_set(yextra2) then oplot, xlims, yextra2, col = 0, linestyle = 2
   for i = 0, n_elements(z2use)-1 do begin
      seltemp1 = where(z EQ z2use[i])
      match2, Treal[seltemp1], T2use, suba, subb
      seltemp2 = subb(where(subb GE 0))
      sel = seltemp1[seltemp2]
-     oplot, x[sel], y1[sel], ps = -8, col = col_all[i];col = 1;
+     oplot, x[sel], y1[sel], ps = -8, col = col_all[i]
   endfor
-
+  
   multiplot, /reset
 
   if keyword_set(saveplot) then begin
@@ -174,13 +174,13 @@ PRO plot2bands, whatplot, par2plot, bands, comp, optype = optype, z2plot = z2plo
   nbeta = n_elements(beta_all)
   
   if comp EQ 'MBBtest' then begin
-     opstring = '_'
+     opstring = ''
   endif else begin
      if not keyword_set(optype) then begin
         optype = 'red'
         print, 'KEYWORD ''OPTYPE'' NOT SET. DEFAULTING TO ''', strupcase(optype), ''''
      endif
-     opstring = '-' + optype + '_'
+     opstring = '-' + optype
   endelse
   
   ;; Plot quantities setup
@@ -217,7 +217,7 @@ PRO plot2bands, whatplot, par2plot, bands, comp, optype = optype, z2plot = z2plo
   for k = 0, nbdcomb-1 do begin
      bdtemp = bands[*, k]
      bdstring = bdtemp[0] + '+' + bdtemp[1]
-     fname_temp = '2bdfit_' + comp + opstring + 'oneT_' + bdstring + '.dat'
+     fname_temp = '2bdfit_' + comp + opstring + '_oneT_' + bdstring + '.dat'
      readcol, fit_folder + fname_temp, z, breal, Treal, Tfit, Mfit, dMfit, format = '(F,F,F,X,X,F,F,F)'
      if par2plot EQ 'M' then ylims = ylims_all[*, k]
      
@@ -378,8 +378,27 @@ endif
 if whatplot EQ '2' then begin
 
    print
-   print, 'Use create_FIR_SED.pro instead'
+   print, 'Calling create_FIR_SED.pro to make Fig. 2. NOTA: You need to have compiled GRAMS_SYNTHPHOT.PRO and PHYSCONST.PRO'
    print
+
+   ;; E30R silicates
+   comp = ['E30R']
+   compfrac = [1.]
+   T_array = [10., 100., 300.]
+   T_frac_array = [1., 0., 0.]  ; Content is not important as long as it has the same # of elements as T_array
+   ;.r grams_synthphot
+   ;.r physconst
+   create_FIR_SED, save_sed = 0, plotsmoothing = 1, plot_SED = 0, save_plot = 1, $
+                   comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, /silent
+   ;; BE carbon
+   comp = ['BE']
+   compfrac = [1.]
+   T_array = [24., 100., 295.]
+   T_frac_array = [1., 0., 0.]
+   ;.r grams_synthphot
+   ;.r physconst
+   create_FIR_SED, save_sed = 0, plotsmoothing = 1, plot_SED = 0, save_plot = 1, $
+                   comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, /silent
    
 endif
 
@@ -520,7 +539,7 @@ endif
 
 
 if whatplot EQ '5' then begin
-   ;plotfitres, whatplot, par2plot, comp, compfrac, Tdist, red = red
+
    plotfitres, whatplot, 'M', ['E30R', 'BE'], [.7, .3], '1T', saveplot = saveplot
    
 endif
@@ -557,6 +576,75 @@ if whatplot EQ '9' then begin
    print
    print, 'Work in progress'
    print
+
+   col_all = [0, 30, 75, 250, 3]
+   comp = ['E30R', 'BE']
+   compfrac = [.7, .3]
+   compstring = strjoin(comp + '-' + strtrim(string(100 * compfrac, format = '(F4.1)'), 1), '+')
+   fname_raw = 'Fit_' + compstring + '-raw_oneT_allbd-freeparams_flatpriors.dat'
+   fname_red = 'Fit_' + compstring + '-red_oneT_allbd-freeparams_flatpriors.dat'
+   readcol, fit_folder + fname_raw, Treal, z, Mfit_raw, dMfit_raw_hi, dMfit_raw_lo, Tfit_raw, dTfit_raw_hi, dTfit_raw_lo, betafit_raw, $
+            dbetafit_raw_hi, dbetafit_raw_lo, format = '(X,F,F,X,F,F,F,F,F,F,F,F,F,F)'
+   readcol, fit_folder + fname_red, Mfit_red, dMfit_red_hi, dMfit_red_lo, Tfit_red, dTfit_red_hi, dTfit_red_lo, betafit_red, dbetafit_red_hi, $
+            dbetafit_red_lo, format = '(X,X,X,X,F,F,F,F,F,F,F,F,F,F)'
+   z2plot = [0., 1., 3., 5., 7.]
+   nz2plot = n_elements(z2plot)
+
+   ;; Temperature comparison plot
+   if keyword_set(saveplot) then begin
+      set_plot, 'PS'
+      device, filename = pic_folder + 'Fig' + whatplot + '_Tfit_opred_compare.eps', /color, /encapsulated
+   endif else begin
+      window, /free
+   endelse
+   ;; Setup
+   xlims = [0., 200.]
+   plot, xlims, xlims, xr = xlims, /xstyle, yr = xlims, linestyle = 2, col = 0, $
+         xtit = textoidl('T_{fit} (K) for raw opacity'), ytit = textoidl('T_{fit} (K) for reduced opacity')
+   ;; Cycle on z
+   for i = 0, nz2plot-1 do begin
+      z_temp = z2plot[i]
+      indx = where(z EQ z_temp, count)
+      ;npts = n_elements(indx)
+      if count GT 0 then begin
+         oploterror, Tfit_raw[indx], Tfit_red[indx], dTfit_raw_hi[indx], dTfit_red_hi[indx], ps = 8, /hibar, $
+                     col = col_all[i], errcol = col_all[i]
+         oploterror, Tfit_raw[indx], Tfit_red[indx], dTfit_raw_lo[indx], dTfit_red_lo[indx], ps = 8, /lobar, $
+                     col = col_all[i], errcol = col_all[i]
+      endif
+   endfor
+   if keyword_set(saveplot) then begin
+      device, /close
+      set_plot, 'x'
+   endif
+
+   ;; Beta comparison plot
+   if keyword_set(saveplot) then begin
+      set_plot, 'PS'
+      device, filename = pic_folder + 'Fig' + whatplot + '_beta_opred_compare.eps', /color, /encapsulated
+   endif else begin
+      window, /free
+   endelse
+   ;; Setup
+   xlims = [.8, 2.6]
+   plot, xlims, xlims, xr = xlims, /xstyle, /ystyle, yr = xlims, linestyle = 2, col = 0, $
+         xtit = textoidl('\beta for raw opacity'), ytit = textoidl('\beta for reduced opacity')
+   ;; Cycle on z
+   for i = 0, nz2plot-1 do begin
+      z_temp = z2plot[i]
+      indx = where(z EQ z_temp, count)
+      ;npts = n_elements(indx)
+      if count GT 0 then begin
+         oploterror, betafit_raw[indx], betafit_red[indx], dbetafit_raw_hi[indx], dbetafit_red_hi[indx], ps = 8, /hibar, $
+                     col = col_all[i], errcol = col_all[i]
+         oploterror, betafit_raw[indx], betafit_red[indx], dbetafit_raw_lo[indx], dbetafit_red_lo[indx], ps = 8, /lobar, $
+                     col = col_all[i], errcol = col_all[i]
+      endif
+   endfor
+   if keyword_set(saveplot) then begin
+      device, /close
+      set_plot, 'x'
+   endif
    
 endif
 
@@ -564,10 +652,6 @@ endif
 
 if whatplot EQ '10' then begin
    ;; Effect of f_w on SED shape
-
-   print
-   print, 'Work in progress'
-   print
 
    comp = ['E30R', 'BE']
    compfrac = [.7, .3]
@@ -578,26 +662,52 @@ if whatplot EQ '10' then begin
    endif
    fw_all = [.003, .03, .3]
    nfw = n_elements(fw_all)
-   Tstring =
+   xlims = [30., 1000.]
+   ylims = [.5, 5e3]
 
    if keyword_set(saveplot) then begin
       set_plot, 'PS'
-      device, filename = pic_folder + 'Fig' + whatplot + '_twoT_SED_shapes.eps', /color, /encapsulated
+      device, filename = pic_folder + 'Fig' + whatplot + '_twoT_SED_shapes.eps', /color, /encapsulated, xsize = 10., ysize = 15.
    endif else begin
       window, /free
    endelse
 
    !p.multi=[0, 1, nfw]
+   multiplot, mxtitle = textoidl('\lambda (\mum)'), mytitle = textoidl('Flux (Jy)'), $
+              mxTitSize = 1.2, myTitSize = 1.3
    
    for i = 0, nfw-1 do begin
-
+      ;; Read SED files
       format2use = '(F0.' + strtrim(string(ceil(alog10(1/fw_all[i]))), 1) + ')'
-      fwstring = 'fw' + strtrim(string(fw_all[i], format = format2use), 1)
-      fname_spec = 'Spec_' + compstring + '_twoT-30.0K+100.0K-' + fwstring + '.dat'
-      fname_phot = 'Phot_' + compstring + '_twoT-30.0K+100.0K-' + fwstring + '_z0.00.dat'
+      fwstring = strtrim(string(fw_all[i], format = format2use), 1)
+      fname_spec = 'Spec_' + compstring + '_twoT-30.0K+100.0K-fw' + fwstring + '.dat'
+      fname_phot = 'Phot_' + compstring + '_twoT-30.0K+100.0K-fw' + fwstring + '_z0.00.dat'
       readcol, SED_folder + 'Spectra/' + fname_spec, wl_spec, fl_spec
-      
+      readcol, SED_folder + 'Photometry/' + fname_phot, wl_phot, fl_phot, dfl_phot, format = '(X,F,F,F)'
+      ;; Read fit file, plot fitted SED
+      fname_fit = 'Fit_' + compstring + '_twoT_allbd-freeparams_flatpriors.dat'
+      readcol, fit_folder + fname_fit, Tmod, zmod, Mfit, Tfit, betafit, format = '(X, F, F, X, F, X, X, F, X, X, F, X, X)'
+      z2use = [0.]
+      whatfit = where(Tmod EQ fw_all[i] AND zmod EQ z2use[0])
+      Tfit2use = (Tfit[whatfit])[0]
+      betafit2use = (betafit[whatfit])[0]
+      Mfit2use = (Mfit[whatfit])[0]
+      wl_fit = wl_spec * (1+z2use[0])
+      makesed, wl_fit, fl_fit, Tfit2use, [1.], ['MBBtest'], [1.], M_d = Mfit2use, beta = betafit2use, z_in = z2use, /silent
+      peak = where(fl_fit EQ max(fl_fit))
+      ;; Plot
+      plot, [0., 0.], [0., 0.], col = 0, xrange = xlims, xstyle = 1, /xlog, yrange = ylims, ystyle = 1, /ylog, /nodata
+      oplot, [50., 50.], ylims, col = 3
+      oplot, wl_fit, fl_fit, col = 250, thick = !p.thick * 1.5
+      oplot, wl_fit[peak], fl_fit[peak], ps = 8, col = 250, symsize = 1.25
+      oplot, wl_spec, fl_spec, col = 0
+      oploterror, wl_phot, fl_phot, dfl_phot, ps = 4, col = 0, errcol = 0
+      ;; Labels
+      xyouts, (min(xlims)^.1 * max(xlims)^.9), (min(ylims)^.2 * max(ylims)^.8), textoidl('f_w = ') + fwstring, charsize = 1.3, alignment = 1.
+      multiplot      
    endfor
+
+   multiplot, /reset
 
    if keyword_set(saveplot) then begin
       device, /close
@@ -628,10 +738,45 @@ endif
 if whatplot EQ '13' then begin
    ;; Warm dust emission fraction
 
-   print
-   print, 'Work in progress'
-   print
+   comp = ['E30R', 'BE']
+   compfrac = [.7, .3]
+   if not keyword_set(red) then red = 1
+   compstring = strjoin(comp + '-' + strtrim(string(100 * compfrac, format = '(F4.1)'), 1), '+')
+   if comp NE ['MBBtest'] then begin
+      if red then compstring += '-red' else compstring += '-raw'
+   endif
+   fw_all = [.3, .1, .03, .01]
+   nfw = n_elements(fw_all)
+   xlims = [30., 1000.]
+   col_all = [0, 250, 75, 3]
+   
+   readcol, SED_folder + 'Spectra/Spec_' + compstring + '_oneT-30.0K.dat', wl, fl_30K
+   readcol, SED_folder + 'Spectra/Spec_' + compstring + '_oneT-100.0K.dat', fl_100K, format = '(X,F)'
+   
+   if keyword_set(saveplot) then begin
+      set_plot, 'PS'
+      device, filename = pic_folder + 'Fig' + whatplot + '_warm_dust_contribution.eps', /color, /encapsulated
+   endif else begin
+      window, /free
+   endelse
 
+   plot, [0., 0.], [0., 0.], xrange = xlims, yrange = [0., 100.], /xstyle, /xlog, xtitle = textoidl('\lambda (\mum)'), $
+         ytitle = 'Warm dust contribution (%)', xcharsize = 1.3, ycharsize = 1.5
+   
+   for i = 0, nfw-1 do begin
+      format2use = '(F0.' + strtrim(string(ceil(alog10(1/fw_all[i]))), 1) + ')'
+      fwstring = strtrim(string(fw_all[i], format = format2use), 1)
+      fl_tot = fw_all[i] * fl_100K + (1 - fw_all[i]) * fl_30K
+      oplot, wl, 100. * fw_all[i] * fl_100K/fl_tot, col = col_all[i], thick = !p.thick * 1.5
+      xyouts, (min(xlims)^.05 * max(xlims)^.95), (min(100. * fw_all[i] * fl_100K/fl_tot) + 2.), textoidl('f_W = ') + fwstring, $
+              col = col_all[i], charsize = 1.5, charthick = !p.charthick * 1.25, alignment = 1.
+   endfor
+
+   if keyword_set(saveplot) then begin
+      device, /close
+      set_plot, 'x'
+   endif
+   
 endif
 
 
@@ -725,6 +870,44 @@ if whatplot EQ 'A6' then begin
    plotfitres, whatplot, 'B', ['MBBtest'], [1.], '2T', saveplot = saveplot
 
 endif
+
+
+
+
+if whatplot EQ 'A7' then begin
+
+   par2plot = 'M'
+   comp = ['MBBtest'] ;& compfrac = [1.]
+   compstring = comp[0] ;strjoin(comp + '-' + strtrim(string(100 * compfrac, format = '(F4.1)'), 1), '+')
+   z2plot = [6., 7.]
+   beta_all = [1.5, 1.75, 2.]
+   bands = $
+      [['ALMA_7', 'ALMA_6'], $
+       ['ALMA_6', 'ALMA_3'], $
+       ['ALMA_7', 'ALMA_3']]
+   
+   plot2bands, whatplot, par2plot, bands, compstring, z2plot = z2plot, beta_all = beta_all, saveplot = saveplot
+
+endif
+
+
+
+if whatplot EQ 'A8' then begin
+
+   par2plot = 'T'
+   comp = ['MBBtest'] ;& compfrac = [1.]
+   compstring = comp[0] ;strjoin(comp + '-' + strtrim(string(100 * compfrac, format = '(F4.1)'), 1), '+')
+   z2plot = [6., 7.]
+   beta_all = [1.5, 1.75, 2.]
+   bands = $
+      [['ALMA_7', 'ALMA_6'], $
+       ['ALMA_6', 'ALMA_3'], $
+       ['ALMA_7', 'ALMA_3']]
+   
+   plot2bands, whatplot, par2plot, bands, compstring, z2plot = z2plot, beta_all = beta_all, saveplot = saveplot
+
+endif
+
 
 
 

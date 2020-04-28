@@ -96,12 +96,12 @@ def point_source3(frequencies, mass, temperature, beta, z=0.):
 
 # Convolution of model by filters
 def read_fileterresponse(frequencies, filters):
-        filter_files_all = ("band_profiles/Herschel_Pacs.blue.dat", #"PACS_70mu.dat", 
+        filter_files_all = ("band_profiles/Herschel_Pacs.blue.dat",  #"PACS_70mu.dat", 
                             "band_profiles/Herschel_Pacs.green.dat", #"PACS_100mu.dat", 
-                            "band_profiles/Herschel_Pacs.red.dat", #"PACS_160mu.dat", 
-                            "band_profiles/SPIRE_250mu.dat", #"SPIRE_250mu.dat", 
-                            "band_profiles/SPIRE_350mu.dat", #"SPIRE_350mu.dat", 
-                            "band_profiles/SPIRE_500mu.dat", #"SPIRE_500mu.dat",
+                            "band_profiles/Herschel_Pacs.red.dat",   #"PACS_160mu.dat", 
+                            "band_profiles/Herschel_SPIRE.PSW.dat",  #"SPIRE_250mu.dat", 
+                            "band_profiles/Herschel_SPIRE.PMW.dat",  #"SPIRE_350mu.dat", 
+                            "band_profiles/Herschel_SPIRE.PLW.dat",  #"SPIRE_500mu.dat",
                             "band_profiles/SCUBA2_450mu.dat",
                             "band_profiles/SCUBA2_850mu.dat",
                             "band_profiles/ALMA_10_Cycle6.2.dat",
@@ -321,7 +321,6 @@ if __name__=="__main__":
         currentmode = 'None'
         
         ### FILE I/O: UPDATE EACH TIME ###
-	# Nota: If you are doing T-correction, update format of %Treal on lines 407, 494
         kappa_eff = .7 * (u.cm)**2 / (u.g)  # kappa_0 from James et al. 2002
         wl_eff = 850. * (u.um)              # lambda_0 from James et al. 2002
 
@@ -334,7 +333,6 @@ if __name__=="__main__":
             print('ERROR (PHOTOMETRY_FIT.PY): NPARAM = ', nparam, '. This quantity needs to be either 2 or 3.')
 
         sedtype = '1T' # Accepted values: '1T' (single-temperature model),
-                       #                  '1T+corr' (single-temperature with CMB heating correction
                        #                  '2T' (two-temperatures model)
                        # NOTA: This refers to the SED to be read, not the fitting model (which is always single-temperature)
         if (sedtype == '1T'):
@@ -360,7 +358,7 @@ if __name__=="__main__":
         if plat == 'Windows':
             SEDfolder = r"synthetic_SEDs\Photometry\\"         # Synthetic potometry files
             outfolder = r"fit_result_files\\"                  # Fit results files
-            mcmcplotfolder = r"plots\MCMC\\"   # MCMC PDF plots
+            mcmcplotfolder = r"plots\MCMC\\"                   # MCMC PDF plots
         else:
             SEDfolder = 'synthetic_SEDs/Photometry/'
             outfolder = 'fit_result_files/'
@@ -387,19 +385,13 @@ if __name__=="__main__":
              fixstring = fixstring + '_T40K-betaM31-prior'   
 
         if (sedtype == '1T'):
-            allSED = [fn for fn in glob.glob(SEDfolder + '*Phot*' + comp + '*oneT*.dat', recursive = False) if not (((os.path.basename(fn).__contains__('CMBcorr')) or (os.path.basename(fn).__contains__('beta'))))]
+            allSED = [fn for fn in glob.glob(SEDfolder + '*Phot*' + comp + '*oneT*.dat', recursive = False)]
+            #if not (os.path.basename(fn).__contains__('beta'))]
             if comp == 'MBBtest':
                     fname_out_raw = 'Fit_' + comp + '_oneT' + fixstring
             else:
                     fname_out_raw = 'Fit_' + comp + '-raw_oneT' + fixstring
             fname_out_red = 'Fit_' + comp + '-red_oneT' + fixstring
-        elif (sedtype == '1T+corr'):
-            allSED = glob.glob(SEDfolder+'*Phot*' + comp + '*oneT*CMBcorr*.dat', recursive = False)
-            if comp == 'MBBfit':
-                    fname_out_raw = 'Fit_' + comp + '_oneT-CMBcorr' + fixstring
-            else:
-                    fname_out_raw = 'Fit_' + comp + '-raw_oneT-CMBcorr' + fixstring
-            fname_out_red = 'Fit_' + comp + '-red_oneT-CMBcorr' + fixstring
         elif (sedtype == '2T'):
             allSED =  glob.glob(SEDfolder+'Phot*' + comp + '*fw*.dat', recursive = False)
             if comp == 'MBBfit':

@@ -1,12 +1,27 @@
 
 FUNCTION uncphot, flux, filters
-  
-nbands = (size(flux))[1] ;n_elements(filters)
-nsed = (size(flux))[2]
-if (size(flux))[0] EQ 2 then nmat = 1 else nmat = (size(flux))[3]
+
+CASE (size(flux))[0] OF
+   1: begin
+      nsed = 1
+      nmat = 1
+   end
+   2: begin
+      nsed = (size(flux))[2]
+      nmat = 1
+   end
+   3: begin
+      nsed = (size(flux))[2]
+      nmat = (size(flux))[3]
+   end
+   else: print, 'ERROR (MAKESED): FLUX variable has the wrong dimensions (' + strtrim(string((size(flux))[0]), 1) + $
+                '). Accepted values: 1, 2 or 3.'
+ENDCASE
+nbands = n_elements(filters)
 nsample = 10000
 err_samples = fltarr(nbands, nsed, nmat, nsample)
 
+;stop
 
 ;; Opacity uncertainty
 unc_oprop = .10 

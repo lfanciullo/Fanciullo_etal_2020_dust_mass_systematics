@@ -19,7 +19,7 @@ PRO makesed, wl_sed, $
              nocmbcorr = nocmbcorr, $
              T_split = T_split, $
              comp_split = comp_split, $
-             verbose = verbose
+             silent = silent
                 
 ;; ADD DESCRIPTION OF PROCEDURE
 ;; sed_out
@@ -42,7 +42,7 @@ PRO makesed, wl_sed, $
 ;; nocmbcorr
 ;; T_split
 ;; comp_split
-;; verbose
+;; silent
   
 @makesed_params.idl
   
@@ -59,7 +59,7 @@ if not keyword_set(T_0) then begin
 endif
 if not keyword_set(M_d) then begin
    M_d = 1d8                    ; In Msun
-   if not keyword_set(verbose) then print, 'MAKESED: Keyword M_D not defined. Defaulting to ', $
+   if not keyword_set(silent) then print, 'MAKESED: Keyword M_D not defined. Defaulting to ', $
                                            strtrim(string(M_d, format = '(E7.1)'), 1), ' M_sun'
 endif
 M_d_cgs = M_d * 1.9885d33       ; Conversion M_sun --> g
@@ -104,8 +104,8 @@ for i = 0, nsed-1 do begin
    if keyword_set(red) then begin
       carbon = where(comp EQ 'AC' OR comp EQ 'BE')
       sil = where(comp NE 'AC' AND comp NE 'BE')
-      op_all[*, i, *, carbon] /= redfact_c  ; Update: use wrapper values
-      op_all[*, i, *, sil] /= redfact_sil
+      if carbon NE [-1] then op_all[*, i, *, carbon] /= redfact_c
+      if sil NE [-1] then op_all[*, i, *, sil] /= redfact_sil
    endif
 
    ;; SED creation

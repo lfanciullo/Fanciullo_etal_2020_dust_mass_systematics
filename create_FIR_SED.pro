@@ -1,23 +1,8 @@
 
-FUNCTION tcorrcmb, T_in, z, Tcmb0 = Tcmb, beta = beta
-;; Calculates CMB-heated dust temperature according to...
-  
-if not keyword_set(Tcmb) then Tcmb = 2.725
-if not keyword_set(beta) then begin
-   beta = 1.5
-   if not keyword_set(silent) then print, 'TCORRCMB: No value set for beta. Defaulting to ', strtrim(string(beta, format = '(F0.2)'), 1)
-endif
-index = 4 + beta
-T_out = (T_in^index + Tcmb^index * ((1+z)^index - 1) )^(1./index)
-return, T_out
-END
-
-
-
 PRO create_FIR_SED, fold_data = fold_data, fold_sed = fold_SEDs, fold_pics = fold_pics, $
                 save_sed = save_sed, plotsmoothing = plotsmoothing, plot_SED = plot_SED, save_plot = save_plot, $
                 comp = comp, fcomp = fcomp, T_all = T_all, fT_all = fT_all, z_all = z_all, filt = filt, $
-                T_cmb0 = T_cmb0, M_d = M_d, beta = beta, wl_sed = wl_sed, tcorr = tcorr, silent = silent
+                T_cmb0 = T_cmb0, M_d = M_d, beta = beta, wl_sed = wl_sed, silent = silent
   
 ;; NEED TO COMPILE GRAMS_SYNTHPHOT BEFORE USING THIS
 
@@ -156,11 +141,11 @@ endfor
 
 ;; Create spectra
 makesed, wl_sed, sed, T_list, Tfrac_list, comp, fcomp, z_in = z_list, M_d = M_d, filters_in = filt, $
-            plot = plotsmoothing, saveplot = save_plot
+            T_0 = T_cmb0, fold_data = fold_data, plot = plotsmoothing, saveplot = save_plot, silent = silent
 ;; Create a reduced-opacity version as well (unless comp = MBBtest)
 if comp NE ['MBBtest'] then begin
    makesed, wl_sed, sed_reduc, T_list, Tfrac_list, comp, fcomp, z_in = z_list, M_d = M_d, filters_in = filt, /red, $
-               plot = plotsmoothing, saveplot = save_plot
+               T_0 = T_cmb0, fold_data = fold_data, plot = plotsmoothing, saveplot = save_plot, silent = silent
 endif
 
 ;; Save spectra
@@ -189,7 +174,6 @@ if save_sed then begin
                       strjoin(strtrim(string(fT_all[*, i], format = Tfracformat),1), '+')
          end
       ENDCASE
-      if keyword_set(tcorr) then Tstring += '-CMBcorr'
       fname = 'Spec_' + compstring + Tstring + '.dat'
       ;; Writing raw opacity file
       ised = i * nz
@@ -197,7 +181,7 @@ if save_sed then begin
       writecol, fold_SEDs + 'Spectra/' + fname, wl_sed[goodspec], sed[goodspec, ised], FMT='(F8.2, "|", E10.3)'
       ;; Writing reduced opacity file
       if comp NE ['MBBtest'] then begin
-         fname = 'spec_' + compstring_reduc + Tstring
+         fname = 'Spec_' + compstring_reduc + Tstring + '.dat'
          goodspec = where(finite(sed_reduc[*, ised]))
          writecol, fold_SEDs + 'Spectra/' + fname, wl_sed[goodspec], sed_reduc[goodspec, ised], FMT='(F8.2, "|", E10.3)'
       endif
@@ -205,17 +189,15 @@ if save_sed then begin
 endif
 
 ;; Create photometry
-makesed, wl_sed, photstruct, T_list, Tfrac_list, comp, fcomp, /photometry, $;, Tdist
-            /errbars, z_in = z_list, M_d = M_d, filters_in = filt, $
-            plot = plotsmoothing, saveplot = save_plot
+makesed, wl_sed, photstruct, T_list, Tfrac_list, comp, fcomp, /photometry, /errbars, z_in = z_list, M_d = M_d, $
+         filters_in = filt, T_0 = T_cmb0, fold_data = fold_data, plot = plotsmoothing, saveplot = save_plot, silent = silent
 wl_phot = photstruct.filt_wl
 fl_phot = photstruct.flux
 dfl_phot = photstruct.dflux
 ;; Create a reduced-opacity version as well (unless comp = MBBtest)
 if comp NE ['MBBtest'] then begin 
-   makesed, wl_sed, photstruct_reduc, T_list, Tfrac_list, comp, fcomp, /photometry, $;, Tdist
-               /errbars, z_in = z_list, M_d = M_d, filters_in = filt, /red, $
-               plot = plotsmoothing, saveplot = save_plot
+   makesed, wl_sed, photstruct_reduc, T_list, Tfrac_list, comp, fcomp, /photometry, /errbars, z_in = z_list, M_d = M_d, /red, $
+            filters_in = filt, T_0 = T_cmb0, fold_data = fold_data, plot = plotsmoothing, saveplot = save_plot, silent = silent
    fl_phot_reduc = photstruct_reduc.flux
    dfl_phot_reduc = photstruct_reduc.dflux
 endif
@@ -245,7 +227,6 @@ if save_sed then begin
                       strjoin(strtrim(string(fT_all[*, i/nz], format = Tfracformat),1), '+')
          end
       ENDCASE
-      if keyword_set(tcorr) then Tstring += '-CMBcorr'
       zstring = '_z' + strtrim(string(z_list[i], format = '(F4.2)'), 1) ; Redshift string
       fname = 'Phot_' + compstring + Tstring + zstring
       
@@ -258,29 +239,13 @@ if save_sed then begin
       if (fl_phot/dfl_phot)[where(filt EQ 'SPIRE350'), i] GE 3. then goodbd_bool_bdchoice *= 1 - strmatch(filt, 'ALMA_10')
       if (fl_phot/dfl_phot)[where(filt EQ 'SPIRE500'), i] GE 3. then goodbd_bool_bdchoice *= 1 - strmatch(filt, 'ALMA_9')
 
-      goodbd_lax = where(goodbd_bool_finite * goodbd_bool_wl)       ; 'Permissive' selection
       goodbd_strict = where(goodbd_bool_finite * goodbd_bool_wl * $
-                            goodbd_bool_snr * goodbd_bool_bdchoice) ; 'Strict' selection
-      
-      ;; Write output file (raw opacity, permissive selection)
-      if goodbd_lax EQ [-1] then begin
-         print, 'WARNING: No valid data for T = ' + strtrim(string(T_list[*, i], format = '(F0.2)'), 1) + ', z = ' + $
-                strtrim(string(z_list[i], format = '(F0.2)'), 1) + ' (redundant band selection). No file recorded.'
-      endif else begin
-         nlines_temp = n_elements(goodbd_lax)
-         openw, 1, fold_SEDs + 'Photometry/Redundant_bands/' + fname + '_allfilters.dat'  
-         printf, 1, '#   Filter |   wl (um) | Flux (Jy) |   dFlux   |'
-         printf, 1, '# ----------------------------------------------'
-         printform = '(A11, "|", F11.2, "|", E11.3, "|", E11.3)'
-         for j = 0, nlines_temp-1 do printf, 1, filt[goodbd_lax[j]], wl_phot[goodbd_lax[j]], fl_phot[goodbd_lax[j], i], $
-                                        dfl_phot[goodbd_lax[j], i], format = printform
-         close, 1
-      endelse
+                            goodbd_bool_snr * goodbd_bool_bdchoice)
 
-      ;; Write output file (raw opacity, strict selection)
+      ;; Write output file (raw opacity)
       if goodbd_strict EQ [-1] then begin
          print, 'WARNING: No valid data for T = ' + strtrim(string(T_list[*, i], format = '(F0.2)'), 1) + ', z = ' + $
-                strtrim(string(z_list[i], format = '(F0.2)'), 1) + ' (strict band selection). No file recorded.'
+                strtrim(string(z_list[i], format = '(F0.2)'), 1) + '. No file recorded.'
       endif else begin
          nlines_temp = n_elements(goodbd_strict)
          openw, 1, fold_SEDs + 'Photometry/' + fname + '.dat'  
@@ -303,29 +268,13 @@ if save_sed then begin
          if (fl_phot_reduc/dfl_phot_reduc)[where(filt EQ 'SPIRE350'), i] GE 3. then goodbd_bool_bdchoice *= 1 - strmatch(filt, 'ALMA_10')
          if (fl_phot_reduc/dfl_phot_reduc)[where(filt EQ 'SPIRE500'), i] GE 3. then goodbd_bool_bdchoice *= 1 - strmatch(filt, 'ALMA_9')
          
-         goodbd_lax = where(goodbd_bool_finite * goodbd_bool_wl)       ; 'Permissive' selection
          goodbd_strict = where(goodbd_bool_finite * goodbd_bool_wl * $
-                               goodbd_bool_snr * goodbd_bool_bdchoice) ; 'Strict' selection
+                               goodbd_bool_snr * goodbd_bool_bdchoice)
 
-         ;; Write output file, lax selection
-         if goodbd_lax EQ [-1] then begin
-            print, 'WARNING: No valid data for T = ' + strtrim(string(T_list[*, i], format = '(F0.2)'), 1) + ', z = ' + $
-                   strtrim(string(z_list[i], format = '(F0.2)'), 1) + ' (redundant band selection). No file recorded.'
-         endif else begin
-            nlines_temp = n_elements(goodbd_lax)
-            openw, 1, fold_SEDs + 'Photometry/Redundant_bands/' + fname_reduc + '_allfilters.dat'  
-            printf, 1, '#   Filter |   wl (um) | Flux (Jy) |   dFlux   |'
-            printf, 1, '# ----------------------------------------------'
-            printform = '(A11, "|", F11.2, "|", E11.3, "|", E11.3)'
-            for j = 0, nlines_temp-1 do printf, 1, filt[goodbd_lax[j]], wl_phot[goodbd_lax[j]], fl_phot_reduc[goodbd_lax[j], i], $
-                                                dfl_phot_reduc[goodbd_lax[j], i], format = printform
-            close, 1
-         endelse
-
-         ;; Write output file, permissive selection
+         ;; Write output file
          if n_elements(goodbd_strict) LT 4 then begin
             print, 'WARNING: Not enough valid bands for T = ' + strtrim(string(T_list[*, i], format = '(F0.2)'), 1) + ', z = ' + $
-                   strtrim(string(z_list[i], format = '(F0.2)'), 1) + ' (strict band selection). No file recorded.'
+                   strtrim(string(z_list[i], format = '(F0.2)'), 1) + '. No file recorded.'
          endif else begin
             nlines_temp = n_elements(goodbd_strict)
             openw, 1, fold_SEDs + 'Photometry/' + fname_reduc + '.dat'  
