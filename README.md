@@ -34,7 +34,7 @@ The code is mostly written in IDL 7.0, with one script in Python 3.6. It has not
     * Herschel_SPIRE.PMW.dat (SPIRE 350 um)
     * Herschel_SPIRE.PLW.dat (SPIRE 500 um)
 * *SCUBA2 bands:* The SCUBA2 bandpass profiles (model prediction) can be downloaded from [their JCMT page](https://www.eaobservatory.org/jcmt/instrumentation/continuum/scuba-2/filters/) (section "Estimated filter profiles") as `model450.pdf` and `model850.pdf`. Despite their extension, these are text files.
-    *Only the first and last column of each file are necessary: save the first and last column of each file in new files named `SCUBA2_450mu.dat` and `SCUBA2_850m.dat`. This whole procedure can be done automatically by running [rewrite_scuba2_bands](rewrite_scuba2_bands.idl) from within the `band_profiles/` subfolder:
+    * Only the first and last column of each file are necessary: save the first and last column of each file in new files named `SCUBA2_450mu.dat` and `SCUBA2_850m.dat`. This procedure can be done automatically by running [rewrite_scuba2_bands](rewrite_scuba2_bands.idl) from within the `band_profiles/` subfolder:
     ~~~IDL
         @rewrite_scuba2_bands.idl
     ~~~
