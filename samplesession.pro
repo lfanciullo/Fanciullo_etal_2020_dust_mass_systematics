@@ -44,41 +44,4 @@ create_FIR_SED, fold_data = folddata, fold_sed = foldseds, fold_pics = foldpics,
                 comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, $
                 filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed, /silent
 
-
-
-;;; PLOTTING FIG. 2 ;;;
-
-;; Settings
-savesed = 0
-plot_smooth = 1
-plotSED = 0
-saveplot = 1
-
-;; Parameters
-folddata = 'MAC_files_reprocessed/'
-foldSEDs = 'synthetic_SEDs/'
-foldpics = 'plots/'
-z_array = [0.]
-
-;; Choice of material (to comment/uncomment/modify as needed):
-;; Example: E30R silicates
-;comp = ['E30R']
-;compfrac = [1.]
-;T_array = [10., 100., 300.]
-;T_frac_array = [1., 0., 0.]  ; Content is not important as long as it has the same # of elements as T_array
-;; Example: BE carbon
-comp = ['BE']
-compfrac = [1.]
-T_array = [24., 100., 295.]
-T_frac_array = [1., 0., 0.]  ; Content is not important as long as it has the same # of elements as T_array
-
-;; Launching the script
-.r grams_synthphot
-.r physconst
-create_FIR_SED, save_sed = savesed, plotsmoothing = plot_smooth, plot_SED = plotSED, save_plot = saveplot, $
-                comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, /silent
-
-
-
-
 END
