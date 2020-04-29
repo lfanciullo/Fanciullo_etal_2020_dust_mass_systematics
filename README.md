@@ -10,6 +10,8 @@ All scripts have to be run from the main directory unless otherwise indicated.
 ---------------------------
 
 The code is mostly written in IDL 7.0, with one script in Python 3.6. It has not been tested for other distributions. The following code is needed for the scripts to work:
+* The Astropy package for Python.
+* The Emcee package for Python.
 * The `GRAMS_synthphot` package for IDL, developed by S. Srinivasan, is included in this Git repository.
 * `match2.pro`, which can be downloaded off the Internet. This procedure needs to be in your machine's IDL path (`~/idl-libs/`) for [GRAMS_synthphot](grams_synthphot.pro) to work.
 * `writecol.pro`, which can be downloaded off the Internet.
@@ -152,7 +154,7 @@ The two-band fit is done by [fit2bands.pro](fit2bands.pro), which can be run fro
 The output files are saved in the `fit_result_files/` folder, with the naming convention `2bdfit_{composition}-{raw or red}_oneT_{bands used}.dat`.
 
 
-4 --- Making the plots
+5 --- Making the plots
 ----------------------
 
 All plots from the article can be remade using `[makeplots.pro](makeplots.pro)`. Open IDL in the main directory and run the following:

@@ -46,17 +46,17 @@ frequencies = (c/wavelengths.to(u.m)).value         # Same, converted to frequen
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.725)  # Cosmological parameters
 dist_0 = 100                                        # Distance to adopt (in Mpc) when z = 0
 
-# Kernel Density Estimation of the M31 beta profile (Smith et al., 2012) for the prior
-fitsFile = fits.open('Smith_etal_2012_M31_BetaMap.fits', memmap=True)
-image = fitsFile[0].data 
-image_numbers_only_array = image[~np.isnan(image)]
-X = image_numbers_only_array[:,np.newaxis] #np.newaxis = Adds a new axis to the array.
-# Bandwidth
-n = len(X)  #No. of data points 
-d = 1       #Measuring only beta therefore 1D
-bandwidth_calc = (n * (d+2) / 4.) ** (-1. / (d+4)) #Silverman's Rule
-# Gaussian Kernel Density Estimation
-kde = KernelDensity(kernel='cosine', bandwidth=bandwidth_calc).fit(X) 
+## Kernel Density Estimation of the M31 beta profile (Smith et al., 2012) for the prior
+#fitsFile = fits.open('Smith_etal_2012_M31_BetaMap.fits', memmap=True)
+#image = fitsFile[0].data 
+#image_numbers_only_array = image[~np.isnan(image)]
+#X = image_numbers_only_array[:,np.newaxis] #np.newaxis = Adds a new axis to the array.
+## Bandwidth
+#n = len(X)  #No. of data points 
+#d = 1       #Measuring only beta therefore 1D
+#bandwidth_calc = (n * (d+2) / 4.) ** (-1. / (d+4)) #Silverman's Rule
+## Gaussian Kernel Density Estimation
+#kde = KernelDensity(kernel='cosine', bandwidth=bandwidth_calc).fit(X) 
 
 
 
@@ -341,9 +341,9 @@ if __name__=="__main__":
             wl_min = 50.
 
         whatprior = 'TB-flat' # Accepted values: 'TB-flat' = flat prior in T and beta
-                              #                  'T-flat' = flat prior in T, beta prior from M31 (Smith et al. 2012)
+                              #                  'T-flat' = flat prior in T, beta prior from M31 (Smith et al. 2012) (to be reimplemented)
                               #                  'B-flat' = flat prior in beta, Gaussian prior in T with 40 K mean and 40 K sigma
-                              #                  'nonflat' = Gaussian prior in T with 40 K mean and 40 K sigma, beta prior from M31 (Smith et al. 2012)
+                              #                  'nonflat' = Gaussian prior in T with 40 K mean and 40 K sigma, beta prior from M31 (Smith et al. 2012) (to be reimplemented)
 
         # Composition of SED to fit (comment/uncomment/add as needed):
         comp = 'MBBtest'
