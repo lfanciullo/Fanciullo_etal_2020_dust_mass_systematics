@@ -22,7 +22,7 @@ The code is mostly written in IDL 7.0, with one script in Python 3.6. It has not
 
 **Silicate opacity files:** The silicate opacity from [Demyk et al. 2017a](https://ui.adsabs.harvard.edu/abs/2017A%26A...600A.123D/abstract), [2017b](https://ui.adsabs.harvard.edu/abs/2017A%26A...606A..50D/abstract) (D17A, D17B) can be downloaded from https://www.sshade.eu/db/stopcoda (one needs an SSHADE profile to download the data). Unpack the files in the `MAC_files_original/` directory.
 
-**Carbon opacity files:** The carbon data from [Mennella et al. 1998](https://ui.adsabs.harvard.edu/abs/1998ApJ...496.1058M/abstract) (M98) can be requested to Vito Mennella at the following address: `vito.mennella [at] inaf.it` and unpacked in the `MAC_files_original/M98/` subdirectory.
+**Carbon opacity files:** The carbon data from [Mennella et al. 1998](https://ui.adsabs.harvard.edu/abs/1998ApJ...496.1058M/abstract) (M98) can be requested to Vito Mennella at the following address: `vito.mennella [at] inaf.it`. They should be unpacked in the `MAC_files_original/M98/` subdirectory.
 
 **Filter profiles:** The `band_profiles/` folder contains files for ALMA bands (in .dat format) and `(GRAMS_synhtphot)[band_profiles/GRAMS_synhtphot.fits]`, which includes PACS, SPIRE and SCUBA2 files that can be used by IDL. However, `GRAMS_synhtphot` cannot be used by the Python script: it is necessary to download additional profiles from the Internet.
 
@@ -33,11 +33,12 @@ The code is mostly written in IDL 7.0, with one script in Python 3.6. It has not
     * Herschel_SPIRE.PSW.dat (SPIRE 250 um)
     * Herschel_SPIRE.PMW.dat (SPIRE 350 um)
     * Herschel_SPIRE.PLW.dat (SPIRE 500 um)
-* *SCUBA2 bands:* The SCUBA2 bandpass profiles (model prediction) can be downloaded from [their JCMT page](https://www.eaobservatory.org/jcmt/instrumentation/continuum/scuba-2/filters/) (section "Estimated filter profiles") as `model450.pdf` and `model850.pdf`. Despite their extension, these are text files. Only the first and last column of each file are necessary: save the first and last column of each file in new files named `SCUBA2_450mu.dat` and `SCUBA2_850m.dat`. This whole procedure can be done automatically by running [rewrite_scuba2_bands](rewrite_scuba2_bands.idl) from within the `band_profiles/` subfolder:
+* *SCUBA2 bands:* The SCUBA2 bandpass profiles (model prediction) can be downloaded from [their JCMT page](https://www.eaobservatory.org/jcmt/instrumentation/continuum/scuba-2/filters/) (section "Estimated filter profiles") as `model450.pdf` and `model850.pdf`. Despite their extension, these are text files.
+    *Only the first and last column of each file are necessary: save the first and last column of each file in new files named `SCUBA2_450mu.dat` and `SCUBA2_850m.dat`. This whole procedure can be done automatically by running [rewrite_scuba2_bands](rewrite_scuba2_bands.idl) from within the `band_profiles/` subfolder:
     ~~~IDL
         @rewrite_scuba2_bands.idl
     ~~~
-The files `model850.pdf` and `model450.pdf` can be erased afterwards. 
+    The files `model850.pdf` and `model450.pdf` can be erased afterwards. 
 
 
 2 --- Reading and rewriting the opacity files
