@@ -1,0 +1,7 @@
+
+readcol, 'band_profiles/model850.pdf', wl, profile, format = '(F,X,X,X,X,X,X,X,X,X,X,X,X,X,F)'
+writecol, 'band_profiles/SCUBA2_850mu.dat', wl, profile, FMT='(F8.1, F10.3)'
+
+readcol, 'band_profiles/model450.pdf', wl, profile, format = '(F,X,X,X,X,X,X,X,X,X,X,X,X,X,X,F)'
+writecol, 'band_profiles/SCUBA2_450mu.dat', wl, profile, FMT='(F8.1, F10.4)'
+
