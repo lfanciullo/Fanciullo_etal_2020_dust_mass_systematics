@@ -62,31 +62,30 @@ The output files are saved in the `MAC_files_reprocessed/` subdirectory with the
 This corresponds to section 3 of the main article.
 
 The synthetic SEDs can be created with the IDL procedure [create_FIR_SED](create_FIR_SED.pro). The user needs to specify the following parameters before calling the main procedure:
-* Dust composition
-    * Requires one string vector for the material names and one float vector for the materials' mass fraction. For instance, the standard dust composition used in the article --- 70% E30R silicates (from D17B) and 30% BE carbon (from M98) --- is coded as following:
-    ~~~IDL
-        comp = ['E30R', 'BE']
-        compfrac = [.7, .3]
-    ~~~
+**Dust composition:**
+* Requires one string vector for the material names and one float vector for the materials' mass fraction. For instance, the standard dust composition used in the article --- 70% E30R silicates (from D17B) and 30% BE carbon (from M98) --- is coded as following:
+~~~IDL
+    comp = ['E30R', 'BE']
+    compfrac = [.7, .3]
+~~~
     
-* Dust temperature distribution
-    * Two float arrays, one for the temperatures and one for the (mass) fraction of dust at each temperature. One-dimensional arrays of length *N* are interpreted as a single temperature distribution with *N* different temperature values. It can be more convenient to use two-dimensional arrays of size $N_{T} \times N_{\dist}$, which define $N_{\dist}$ separate distributions of $N_{T}$ values each.
-        * The following code defines ten separate models, each with a "temperature distribution" consisting of a single value:
-	~~~IDL
-            T_array = [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
-            T_frac_array = [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]]
-	
-	* This is the code for eight two-temperature models (cold dust component: 30 K, warm component: 100 K), with a warm dust fraction in the 0.0001--0.3 range:
-	~~~IDL
-            T_array = [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
-            T_frac_array = [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]]
-	
-* Redshift range
-    * This is a simple array:
+**Dust temperature distribution:**
+* Two float arrays, one for the temperatures and one for the (mass) fraction of dust at each temperature. One-dimensional arrays of length *N* are interpreted as a single temperature distribution with *N* different temperature values. It can be more convenient to use two-dimensional arrays of size $N_{T} \times N_{\dist}$, which define $N_{\dist}$ separate distributions of $N_{T}$ values each.
+    * The following code defines ten separate models, each with a "temperature distribution" consisting of a single value:
     ~~~IDL
-        z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+        T_array = [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
+        T_frac_array = [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]]
     ~~~
-
+    * This is the code for eight two-temperature models (cold dust component: 30 K, warm component: 100 K), with a warm dust fraction in the 0.0001--0.3 range:
+    ~~~IDL
+       T_array = [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
+       T_frac_array = [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]]
+    ~~~
+**Redshift range:**
+* This is a simple array:
+~~~IDL
+    z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+~~~
 Other parameters have a default value, but the script also accepts user-defined values. You can see more in `[samplesession.pro](samplesession.pro)`.
 
 Finally, call:
