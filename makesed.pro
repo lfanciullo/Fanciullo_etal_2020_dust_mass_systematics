@@ -86,6 +86,7 @@ for i = 0, nsed-1 do begin
       endif
 
       ;; Comp keywords
+;stop
       op_all[*, i, *, *] = make_opac(fold_data, comp, T, wl_eff, plot = plot, saveplot = saveplot)
       nmat = n_elements(comp)
       if keyword_set(beta) and not keyword_set(silent) then print, $

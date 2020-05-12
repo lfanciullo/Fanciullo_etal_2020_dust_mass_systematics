@@ -1,6 +1,8 @@
 FUNCTION make_opac, fold_data, material, T, wl_sed, plot = plot, saveplot = saveplot
 
-;; ...
+;; NOTA BENE: The code assumes that all opacity files use the same
+;;            wavelength array (which they do if they were created
+;;            with opacity_reprocess.pro)
 
 nwl_sed = n_elements(wl_sed)
 nT = n_elements(T)
@@ -20,10 +22,11 @@ for j = 0, nmat-1 do begin
       readcol, filepath_all[i], wl_temp, mac_temp, skipline = 4, /silent
       if (i EQ 0) then begin
          nwl_fromfile = n_elements(wl_temp)  ; NOTA: This assumes that all wavelength arrays have the same size (which should be the case if opacity_reprocess worked well) or that the first array is the shortest (!!!)
-         wl_fromfile = dblarr(nwl_fromfile, nT_fromfile) 
+         wl_fromfile = wl_temp
+         ;wl_fromfile = dblarr(nwl_fromfile, nT_fromfile) 
          mac_fromfile = dblarr(nwl_fromfile, nT_fromfile)
       endif
-      wl_fromfile[*, i] = wl_temp
+      ;wl_fromfile[*, i] = wl_temp
       mac_fromfile[*, i] = mac_temp
       junk = strsplit(filepath_all[i], '_/K.', /extract)
       T_fromfile[i] = junk[n_elements(junk)-3] ;(junk[11])
@@ -33,7 +36,7 @@ for j = 0, nmat-1 do begin
    realTorder = sort(T_fromfile)
    T_fromfile = T_fromfile(realTorder)
    mac_fromfile = mac_fromfile[*, realTorder]
-   wl_fromfile = wl_fromfile[*, realTorder]
+   ;wl_fromfile = wl_fromfile[*, realTorder]
    
    ;; Interpolation on T
    mac_temp = make_array(nwl_fromfile, nT, /FLOAT, VALUE=!values.f_nan)
@@ -66,7 +69,7 @@ for j = 0, nmat-1 do begin
       ;allstyle_BWfrly = [0, 5, 0, 5]
       plotsym, 0, /fill
       Tstring = strtrim(string(fix(T)), 1) + 'K' & Tstring[0] = 'T = ' + Tstring[0]
-      longwl = where(wl_fromfile[*, 0] GT 50.)
+      longwl = where(wl_fromfile GT 50.)
       ;vlongwl = where(wl_fromfile GT 500.)
       lstyles = [0, 5, 1, 2, 3]
       if keyword_set(saveplot) then begin
@@ -113,7 +116,7 @@ for j = 0, nmat-1 do begin
 
    ; Interpolation on wl
    wlrange = where(wl_sed GE min(wl_fromfile) AND wl_sed LE max(wl_fromfile))
-   for i = 0, nT-1 do mac_complete[wlrange, i, j] = interpol(mac_temp[*, i], wl_fromfile[*, i], wl_sed[wlrange])
+   for i = 0, nT-1 do mac_complete[wlrange, i, j] = interpol(mac_temp[*, i], wl_fromfile, wl_sed[wlrange])
 endfor
 
 return, mac_complete

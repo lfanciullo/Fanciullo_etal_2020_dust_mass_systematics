@@ -1,0 +1,74 @@
+
+;;; CREATING SYNTHETIC SPECTROSCOPY/PHOTOMETRY ;;;
+
+;; Settings
+savesed = 1      ; Save the synthetic spectra + photometry?
+plot_smooth = 0  ; Plot the effect of opacity smoothing?
+plotSED = 1      ; Plot the SED (spectrum + photometry)?
+saveplot = 0     ; Save the plots?
+
+;; Parameters
+folddata = 'MAC_files_reprocessed/'  ; Folder containing the (reprocessed) opacity
+foldSEDs = 'synthetic_SEDs/'         ; Folder for the synthetic spectra + photometry
+foldpics = 'plots/'                  ; Plots folder
+Tcmb0 = 2.725  ; In K
+Md = 1d8       ; In Solar masses
+beta = 1.5     ; Beta value for MBBtest
+wlsed = 10.^(findgen(450)/150 + 1.) ; Wavelength range: 10 um - 1 cm, 450 values (150 per order of magnitude)
+filters = ['PACS70', 'PACS100', 'PACS160', 'SPIRE250', 'SPIRE350', 'SPIRE500', 'SCUBA2_450', 'SCUBA2_850', $
+           'ALMA_10', 'ALMA_9', 'ALMA_8', 'ALMA_7', 'ALMA_6', 'ALMA_5', 'ALMA_4', 'ALMA_3']
+
+
+;; AVAILABLE PREMADE DUST MODELS (UNCOMMENT THE ONE YOU WANT TO USE?
+;;  COMMENT THE OTHERS):
+
+;; Model 1. Standard paper composition (70% E30R silicates, 30% BE carbon);
+;;          single temperature SEDs
+comp = ['E30R', 'BE']  ; Materials to be used
+compfrac = [.7, .3]    ; Material mass fractions
+T_array = [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
+T_frac_array = [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] ; Multiple single-temperature models
+z_array = [0.] ;[0., 1., 2., 3., 4., 5., 6., 7.]
+plaw = 0
+
+;; Model 2. Standard paper compostion; two-temperature SEDs
+;comp = ['E30R', 'BE']
+;compfrac = [.7, .3]
+;T_array = [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
+;T_frac_array = [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] 
+;z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+;plaw = 0
+   
+;; Model 3. Test MBB (kappa_0 = .7 cm^2 g^-1, lambda_0 = 850 um, beta = 1.5);
+;;          single temperature SEDs
+;comp = ['MBBtest']
+;compfrac = [1.]
+;T_array = [[20.], [25.], [30.], [35.], [40.], [45.], [50.], [60.], [80.], [100.]]
+;T_frac_array = [[1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.], [1.]] ;& Tdist = 'singleT'  ; Multiple single-temperature models
+;z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+;plaw = 0
+   
+;; Model 4. Test MBB; two-temperature SEDs
+;comp = ['MBBtest']
+;compfrac = [1.]
+;T_array = [[30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.], [30., 100.]]
+;T_frac_array = [[.9999, .0001], [.9997, .0003], [.999, .001], [.997, .003], [.99, .01], [.97, .03], [.9, .1], [.7, .3]] 
+;z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+;plaw = 0
+
+;; Model 5. Standard paper compostion; power-law temperature distribution
+;comp = ['E30R', 'BE']
+;compfrac = [.7, .3]
+;T_array = [20., 300., 10.]   ; T_min, T_max, # of temperatures used
+;T_frac_array = [1., 2., 3.]  ; Indices to use
+;z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
+;plaw = 1
+   
+;; Launching the SED-making procedure
+.r grams_synthphot
+.r physconst
+create_FIR_SED, fold_data = folddata, fold_sed = foldseds, fold_pics = foldpics, $
+     save_sed = savesed, plotsmoothing = plot_smooth, plot_SED = plotSED, save_plot = saveplot, $
+     comp = comp, fcomp = compfrac, T_all = T_array, fT_all = T_frac_array, z_all = z_array, plaw = plaw, $
+     filt = filters, T_cmb0 = Tcmb0, M_d = Md, beta = beta, wl_sed = wlsed, /silent
+

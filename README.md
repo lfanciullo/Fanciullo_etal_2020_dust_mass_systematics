@@ -89,7 +89,7 @@ The synthetic SEDs can be created with the IDL procedure [create_FIR_SED](create
 ~~~IDL
     z_array = [0., 1., 2., 3., 4., 5., 6., 7.]
 ~~~
-Other parameters have a default value, but the script also accepts user-defined values. You can see more in [samplesession.pro](samplesession.pro).
+Other parameters have a default value, but the script also accepts user-defined values. You can see more in [samplesession.idl](samplesession.idl).
 
 Finally, call:
 ~~~IDL
@@ -99,6 +99,11 @@ Finally, call:
                 /savesed, /plotsmoothing 
 ~~~
 to create the synthetic spectra and photometry.
+
+The entire procedure described in this section, for the dust compositions and temperature distribution shown in Fanciullo et al. 2020, can be performed by running [samplesession.idl](samplesession.idl) after commenting/uncommenting the proper sections of script:
+~~~IDL
+    @sessionrestore.idl
+~~~
 
 The output files are saved in the `synthetic_SEDs/` subdirectory, further subdivided into `synthetic_SEDs/Spectra/` and `synthetic_SEDs/Photometry/`. 
 
