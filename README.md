@@ -13,8 +13,8 @@ The code is mostly written in IDL 7.0, with one script in Python 3.6. It has not
 * The Astropy package for Python.
 * The Emcee package for Python.
 * The `GRAMS_synthphot` package for IDL, developed by S. Srinivasan, is included in this Git repository.
-* `match2.pro`, which can be downloaded off the Internet. This procedure needs to be in your machine's IDL path (`~/idl-libs/`) for [GRAMS_synthphot](grams_synthphot.pro) to work.
-* `writecol.pro`, which can be downloaded off the Internet.
+* `match2.pro`, which can be downloaded off the Internet (e.g. from [this page](https://idlastro.gsfc.nasa.gov/ftp/pro/misc/match2.pro) of [the IDL astronomy library](https://idlastro.gsfc.nasa.gov/)). This procedure needs to be in your machine's IDL path (`~/idl-libs/`) for [GRAMS_synthphot](grams_synthphot.pro) to work.
+* `writecol.pro`, which can be downloaded off the Internet (e.g. from [this page](https://www.eg.bucknell.edu/physics/ASTR201/IDLTutorial/writecol.pro) of the [Bucknell University IDL tutorial](https://www.eg.bucknell.edu/physics/ASTR201/IDLTutorial/index.html)).
 * `medabsdev.pro`, a statistics procedure that can be downloaded from [Chris Beaumont's IDL Library](https://www.ifa.hawaii.edu/users/beaumont/code/medabsdev.html). 
 * `percentiles.pro`, a statistics procedure that can be downloaded from [www.heliodocs.com](http://www.heliodocs.com/xdoc/xdoc_print.php?file=$SSW/packages/s3drs/idl/util/percentiles.pro).
 

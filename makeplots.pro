@@ -283,18 +283,25 @@ loadct, 39
 !p.color = 0
 plotsym, 0, /fill
 ;; Defining additional colors
-tvlct, 200, 200, 200, 1         ; Shades of grey
-tvlct, 175, 175, 175, 2
-tvlct, 150, 150, 150, 3
-tvlct, 125, 125, 125, 4
-tvlct, 100, 100, 100, 5
-tvlct,  75,  75,  75, 6
-tvlct, 225,   0, 225, 7         ; Fuchsia
-tvlct, 255, 182, 193, 8         ; Light pink
-tvlct, 150,  75,   0, 9         ; Brown
-tvlct, 135, 206, 250, 10        ; Light sky blue
-tvlct,   0, 100,   0, 11        ; Dark green
-tvlct, 160,   42, 85, 12        ; Sienna
+tvlct, 150, 150, 150, 1         ; Light grey
+tvlct, 112, 112, 112, 2         ; Medium grey
+tvlct,  75,  75,  75, 3         ; Dark grey
+tvlct, 255, 140, 193, 4         ; Light pink
+tvlct, 255,  80, 170, 5         ; Medium pink
+tvlct, 255,  20, 147, 6         ; Dark pink
+
+;; tvlct, 200, 200, 200, 1         ; Shades of grey
+;; tvlct, 175, 175, 175, 2
+;; tvlct, 150, 150, 150, 3
+;; tvlct, 125, 125, 125, 4
+;; tvlct, 100, 100, 100, 5
+;; tvlct,  75,  75,  75, 6
+;; tvlct, 225,   0, 225, 7         ; Fuchsia
+;; tvlct, 255, 182, 193, 8         ; Light pink
+;; tvlct, 150,  75,   0, 9         ; Brown
+;; tvlct, 135, 206, 250, 10        ; Light sky blue
+;; tvlct,   0, 100,   0, 11        ; Dark green
+;; tvlct, 160,   42, 85, 12        ; Sienna
 ;col_all = [0, 30, 75, 250, 1]
 linestyle_all = [3, 5, 1, 2, 0]
 ;pstyle_all = [0, 8, 4, 5, 3]
@@ -406,32 +413,51 @@ endif
 
 if whatplot EQ '3' then begin
 
-   ;; Parameters
-   col_all = [1, 2, 3, 4, 5, 6, 0]
-   youtfactor = [.9, .8, .9, .9, 1.05, .9, .9]
+   ;; MBB opacity from the scientific literature: 3 - 5 parameters each
+   ;;  MAKE SURE COMMENTATION IS CONSISTENT BETWEEN OPACITY AND NAME ARRAYS
+   opac_mbb_all = [$
+                  ;[ 7.5,  230., 1.50, !values.f_nan, !values.f_nan], $  ; Bertoldi et al. 2003, from Valiante et al. 2011
+                  ;[30.0,  125., 2.00, !values.f_nan, !values.f_nan], $  ; Robson et al. 2004, from Valiante et al. 2011
+                  [34.7,  100., 2.20, !values.f_nan, !values.f_nan], $  ; Weingartner & Draine 2001 (LMC fit), from Valiante et al. 2011
+                  [  .4, 1200., 1.60, !values.f_nan, !values.f_nan], $  ; Beelen et al. 2006, from Valiante et al. 2011
+                  [40.0,  100., 1.40, !values.f_nan, !values.f_nan], $  ; Bianchi & Schneider 2007, from Valiante et al. 2011
+                  [ 4.0,  250., 2.08, !values.f_nan, !values.f_nan], $  ; DL07 (fit), from Bianchi 2013
+                  [ 5.1,  250., 1.91, !values.f_nan, !values.f_nan], $  ; Compiègne et al. 2011 (fit), from Bianchi 2013
+                  ;[11.6, 160.,  2.27,          294.,           .48], $  ; Gordon et al. 2014 (MW)
+                  [ 6.4,  250., 1.79, !values.f_nan, !values.f_nan], $  ; THEMIS 2017 (fit), from Galliano et al. 2018
+                  [  .7,  850., 2.00, !values.f_nan, !values.f_nan] $   ; James et al. 2002
+                  ]
+   opac_mbb_names = [$
+                    ;'Bertoldi+03', $
+                    ;'Robson+04', $
+                    'WD01', $
+                    'Beelen+06', $
+                    'BS07', $
+                    'DL07', $
+                    'Compiegne+11', $
+                    ;'Gordon+14', $
+                    'Jones+17', $
+                    'James+02' $
+                    ]
+   alig_all = [$
+              ;1., $
+              ;1., $
+              0., $
+              1., $
+              1., $
+              1., $
+              0., $
+              ;1., $
+              1., $
+              0. $
+              ]
+   ;; Other plot parameters
+   nmbb = (size(opac_mbb_all))[2]
+   xoutfact = fltarr(nmbb) + .95
+   xoutfact[where(alig_all EQ 0.)] = 1.06
    nwl = 201
    wls = 30.* 10.^(findgen(nwl)/100)
-
-   ;; MBB opacity from the scientific literature: 7 models with 3 - 5 parameters each
-   nmbb = 7
-   opac_mbb_all = make_array(5, nmbb, /float, value = !values.f_nan)
-   opac_mbb_all[0:2, 0] = [ 7.5,  230., 1.5]       ;Bertoldi et al. 2003
-   opac_mbb_all[0:2, 1] = [30.0,  125., 2.0]       ;Robson et al. 2004
-   opac_mbb_all[0:2, 2] = [  .4, 1200., 1.6]       ;Beelen et al. 2006
-   opac_mbb_all[0:2, 3] = [34.7,  100., 2.2]       ;Weingartner & Draine 2001 (LMC)
-   opac_mbb_all[0:2, 4] = [40.0,  100., 1.4]       ;Bianchi & Schneider 2007
-   opac_mbb_all[*, 5] = [11.6, 160., 2.27, 294., .48] ;Gordon et al. 2014 (MW)
-   opac_mbb_all[0:2, 6] = [  .7,  850., 2.0]          ;James et al. 2002
-   opac_mbb_names = [$
-                    'Bertoldi+03', $ ; 'Bertoldi et al. ''03', $ ;
-                    'Robson+04', $   ; 'Robson et al. ''04', $ ;
-                    'Beelen+06', $   ; 'Beelen et al. ''06', $ ;
-                    'WD01', $        ; 'Weingartner & Draine ''01 (fit)', $ ;
-                    'B&S07', $       ; 'Bianchi & Schneider ''07', $ ;
-                    'Gordon+14', $   ; 'Gordon et al. ''14' $ ;
-                    'James+02' $     ; 'James et al. ''02' $ ;
-                    ]
-
+   
    ;; Experimental opacity at different temperatures
    comp = ['E30R', 'BE']
    compfrac = [.7, .3]
@@ -451,18 +477,30 @@ if whatplot EQ '3' then begin
    endelse
    plot, [0., 0.], [0., 0.], col = 0, xrange = [50., 2000.], xstyle = 1, /xlog, yrange = [.1, 1e3], ystyle = 1, /ylog, /nodata   
 
-   for i = 0, nmbb-1 do begin  ; Plotting modified blackbodies from the scientific literature
-      ;; White margin for visibility
-      oplot, wls, makembb(wls, opac_mbb_all[*, i]), thick = 1.5 * !p.thick, col = 255
-      oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, symsize = 1.5, col = 255
-      ;; Grey or black actual line
-      oplot, wls, makembb(wls, opac_mbb_all[*, i]), col = col_all[i]
-      oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, col = col_all[i]
+   ;; Plotting modified blackbodies from the scientific literature
+   for i = 0, nmbb-2 do begin
+      ;; Uniform grey lines
+      ;oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, symsize = 1.35, col = 255  ; White margin for visibility
+      ;oplot, wls, makembb(wls, opac_mbb_all[*, i]), col = 2
+      ;oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, col = 2
+      ;; Lines in shades of grey and pink
+      oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, symsize = 1.35, col = 255  ; White margin for visibility
+      oplot, wls, makembb(wls, opac_mbb_all[*, i]), col = nmbb-i-1
+      oplot, [opac_mbb_all[1, i]], [opac_mbb_all[0, i]], ps = 8, col = nmbb-i-1
    endfor
-   for i = 0, nmbb-1 do xyouts, [opac_mbb_all[1, i]] * .95, [opac_mbb_all[0, i]] * youtfactor[i], opac_mbb_names[i], alignment = 1.  ; Carefully calibrated tag placement
+   ; Adding J+02 model in black, with error bars of +- 0.2 cm^2/g at lambda_0
+   oploterror, opac_mbb_all[1, nmbb-1], opac_mbb_all[0, nmbb-1], [.2], ps = 8, symsize = 1.35, errthick = 2. * !p.thick, col = 255, $
+               errcol = 255
+   oplot, wls, makembb(wls, opac_mbb_all[*, nmbb-1]), col = 0
+   oploterror, opac_mbb_all[1, nmbb-1], opac_mbb_all[0, nmbb-1], [.2], ps = 8, col = 0, errcol = 0
 
-   oplot, wls, op_lab_cold, col = 75  ; Lab dust opacity
-   oplot, wls, op_lab_warm, col = 250
+   ;; Carefully calibrated tag placement
+   for i = 0, nmbb-1 do xyouts, opac_mbb_all[1, i] * xoutfact[i], opac_mbb_all[0, i] * .9, opac_mbb_names[i], alignment = alig_all[i], $
+                                charthick = 2 * !p.charthick, col = 255
+   for i = 0, nmbb-1 do xyouts, opac_mbb_all[1, i] * xoutfact[i], opac_mbb_all[0, i] * .9, opac_mbb_names[i], alignment = alig_all[i]
+   
+   oplot, wls, op_lab_cold, col =  75, thick = 1.5 * !p.thick  ; Lab dust opacity
+   oplot, wls, op_lab_warm, col = 250, thick = 1.5 * !p.thick
    
    cx = total(!x.window)/2.  ; X axis label
    cy = !y.window[0] - 0.08
@@ -471,12 +509,17 @@ if whatplot EQ '3' then begin
    cy = total(!y.window)/2.
    xyouts, cx, cy, textoidl('\kappa (cm^2 g^{-1})'), /NORM, charsize = 1.5, align = 0.5, orientation = 90
    
-   legend, ['T = 100 K', 'T = 30 K'], linestyle = [0, 0], col = [250, 75], /right
+   legend, ['T = 100 K', 'T = 30 K'], linestyle = [0, 0], col = [250, 75], thick = 1.5 * !p.thick, /right
    
    if keyword_set(saveplot) then begin
       device, /close
       set_plot, 'x'
    endif
+
+   print, 'Opacity @ 850 um (cm^2 g^-1):'
+   print, 'Experimental (30 K):  ', 10.^(interpol(alog10(op_lab_cold), alog10(wls), alog10([850.])))  ; Power-law interpolation
+   print, 'Experimental (100 K): ', 10.^(interpol(alog10(op_lab_warm), alog10(wls), alog10([850.])))
+   for i = 0, nmbb-1 do print,  opac_mbb_names[i], ': ', 10.^(interpol(alog10(makembb(wls, opac_mbb_all[*, i])), alog10(wls), alog10([850.])))
    
 endif
 
@@ -509,23 +552,25 @@ if whatplot EQ '4' then begin
 
    ;; Opacity before/after reduction
    plot, [0., 0.], [0., 0.], col = 0, xrange = [50., 1000.], xstyle = 1, /xlog, xtickformat = '(A1)', $
-         yrange = [.5, 1e3], ystyle = 1, /ylog, /nodata
-   oplot, wls, op_lab_cold, col = 75
-   oplot, wls, op_lab_warm, col = 250
-   oplot, wls, op_lab_cold_op, col = 75, linestyle = 5
-   oplot, wls, op_lab_warm_op, col = 250, linestyle = 5
-   oplot, [850.], [.7], ps = 8, col = 0
+         yrange = [.3, 1e3], ystyle = 1, /ylog, /nodata
+   oplot, wls, op_lab_cold, col = 75, thick = 1.5 * !p.thick
+   oplot, wls, op_lab_warm, col = 250, thick = 1.5 * !p.thick
+   oplot, wls, op_lab_cold_op, col = 75, linestyle = 5, thick = 1.5 * !p.thick
+   oplot, wls, op_lab_warm_op, col = 250, linestyle = 5, thick = 1.5 * !p.thick
+   oploterror, [850.], [.7], [.2], ps = 8, col = 0
    oplot, wls, makembb(wls, [.7,  850., 2.]), col = 0
+   ;; Labels and legends
+   xyouts, [850.] * .95, [.7] * .9, 'James+02', alignment = 1., charthick = 2 * !p.charthick, col = 255
    xyouts, [850.] * .95, [.7] * .9, 'James+02', alignment = 1.
-   legend, ['T = 100 K', 'T = 30 K'], linestyle = [0, 0], col = [250, 75], position = [53., 9.]
-   legend, ['Standard opacity', 'Reduced opacity'], linestyle = [0, 5], /bottom
+   legend, ['T = 100 K', 'T = 30 K'], linestyle = [0, 0], col = [250, 75], position = [53.3, 6.5]
+   legend, ['Raw opacity', 'Reduced opacity'], linestyle = [0, 5], /bottom
    xyouts, .05, .6, textoidl('\kappa (cm^2 g^{-1})'), /NORM, charsize = 1.5, align = 0.5, orientation = 90 ; Y axis label
 
    ;; Ratio of before/after opacities
    !p.position = [.14, .1, .9, .3]
    plot, [0., 0.], [0., 0.], col = 0, xrange = [50., 1000.], xstyle = 1, /xlog, yrange = [.21, .49], /ystyle, /nodata
-   oplot, wls, op_lab_cold_op/op_lab_cold, col = 75
-   oplot, wls, op_lab_warm_op/op_lab_warm, col = 250
+   oplot, wls, op_lab_cold_op/op_lab_cold, col = 75, thick = 1.5 * !p.thick
+   oplot, wls, op_lab_warm_op/op_lab_warm, col = 250, thick = 1.5 * !p.thick
    xyouts, .52, .03, textoidl('\lambda (\mum)'), /NORM, charsize = 1.5, align = 0.5 ; X, Y axes labels
    xyouts, .05, .2, 'Ratio', /NORM, charsize = 1.5, align = 0.5, orientation = 90   ; Y axis label
    
@@ -533,6 +578,12 @@ if whatplot EQ '4' then begin
       device, /close
       set_plot, 'x'
    endif
+
+   print, 'Opacity @ 850 um (cm^2 g^-1):'
+   print, 'Raw MAC (30 K):      ', 10.^(interpol(alog10(op_lab_cold), alog10(wls), alog10([850.])))  ; Power-law interpolation
+   print, 'Raw MAC (100 K):     ', 10.^(interpol(alog10(op_lab_warm), alog10(wls), alog10([850.])))
+   print, 'Reduced MAC (30 K):  ', 10.^(interpol(alog10(op_lab_cold_op), alog10(wls), alog10([850.])))
+   print, 'Reduced MAC (100 K): ', 10.^(interpol(alog10(op_lab_warm_op), alog10(wls), alog10([850.])))
    
 endif
 
