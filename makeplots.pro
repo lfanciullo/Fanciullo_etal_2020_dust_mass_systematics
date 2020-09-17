@@ -434,7 +434,7 @@ if whatplot EQ '3' then begin
                     'Beelen+06', $
                     'BS07', $
                     'DL07', $
-                    'Compiegne+11', $
+                    'C+11', $
                     ;'Gordon+14', $
                     'Jones+17', $
                     'James+02' $

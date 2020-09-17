@@ -162,7 +162,7 @@ The output files are saved in the `fit_result_files/` folder, with the naming co
 5 --- Making the plots
 ----------------------
 
-All plots from the article can be remade using `[makeplots.pro](makeplots.pro)`. Open IDL in the main directory and run the following:
+All plots from the article can be remade using [makeplots.pro](makeplots.pro). Open IDL in the main directory and run the following:
 ~~~IDL
     makeplots, 1, /saveplot
 ~~~
