@@ -1,5 +1,5 @@
 
-This Git repository contains the code and data needed to reporduce the results from "Systematic errors in dust mass determinations: Insights fromlaboratory opacity measurements" (Fanciullo et al. 2020), including figures. 
+This Git repository contains the code and data needed to reporduce the results from "Systematic errors in dust mass determinations: Insights from laboratory opacity measurements" (Fanciullo et al. 2020), including figures. 
 
 The scripts perform four different functions: rewriting the original opacity data files into a format that can be used by the rest of the code; use these opacities to create a grid of synthetic SEDs (spectra and photometry); fit the synthetic photometry thus obtained; plot the fit results. The rest of this document explains how to do this step-by-step.
 
@@ -172,7 +172,7 @@ The plots are saved in the `plots/` folder in EPS format, under filenames starti
 
 A few of the figures are peculiar:
 * Fig. 2 and Fig. 9 are composed of two pictures each, so the script saves two `Fig2_{...}` files and two `Fig9_{...}` files with different names.
-* Since `[makeplots.pro](makeplots.pro)` calls `[create_FIR_SED.pro](create_FIR_SED.pro)` to make Fig. 2, you need to make sure that `grams_synthphot.pro` and `physconst.pro` are compiled before creating the figure:
+* Since [makeplots.pro](makeplots.pro) calls [create_FIR_SED.pro](create_FIR_SED.pro) to make Fig. 2, you need to make sure that `grams_synthphot.pro` and `physconst.pro` are compiled before creating the figure:
 ~~~IDL
     .r grams_synthphot
     .r physconst
